@@ -4,7 +4,7 @@ Tomasulo Algorithm
 ------------------------------------
 ### Sam Britt
 
-#To build:
+####To build:
 
  - Run `make` to build optimized executables in the project root.
  - Run `make debug` to build non-optimized executables with debugging
@@ -13,11 +13,11 @@ Tomasulo Algorithm
    dependency files.
 
 
-#SYNOPSIS:
+####SYNOPSIS:
 
         tomasulo_sim [OPTIONS] fetch_rate trace_file
 
-#DESCRIPTION:
+####DESCRIPTION:
   The program takes two required arguments. `fetch rate` is the number
   of instructions that can be put in the dispatch queue per cycle.
   `trace_file` is a space-delimited file containing the instruction
@@ -29,7 +29,7 @@ Tomasulo Algorithm
         ab120028 1  4 1 3
         ab12002c 2 -1 4 7
 
-#OPTIONS:
+####OPTIONS:
   The following options are available:
 
   - `-h`, `--help`
