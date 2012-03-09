@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <getopt.h>
+#include <libgen.h>
+#include <string.h>
 
 /* Max number of source registers for any instruction */
 #define SRC_REGISTER_COUNT 2
@@ -60,30 +62,52 @@ struct func_unit {
 	int latency;
 };
 
+/* Prints usage information. Does not exit */
+static void print_usage(FILE *fp, char *program_name)
+{
+	fprintf(fp, "\nUsage:  %s [OPTIONS] <fetch_rate> <trace_file>\n",
+		program_name);
+	fprintf(fp,
+		"\n"
+		"REQUIRED ARGS:\n"
+		"    <fetch_rate>      Number of instructions to fetch per cycle\n"
+		"    <trace_file>      File containing instructions to simulate\n"
+		"\n"
+		"OPTIONS:\n"
+		"    -h --help         Display help and exit\n"
+		"    -v --verbose      Print simulation progress to stdout\n"
+		"    -c <n> --cdb=<n>  Run with <n> common data buses\n"
+		"    --k0=<n>          Run with <n> instances of FU type 0\n"
+		"    --k1=<n>          Run with <n> instances of FU type 1\n"
+		"    --k2=<n>          Run with <n> instances of FU type 2\n"
+		"\n");
+}
+
 static void process_options(int argc, char *const argv[])
 {
-	int c;
 	int k0 = 0;
 	int k1 = 1;
 	int k2 = 2;
-	int cdb_count = 3;
-	while (1) {
-		static struct option opt[] = {
-			/* {name, has_arg, flag, val} */
-			{"k0", required_argument, NULL, '0'},
-			{"k1", required_argument, NULL, '1'},
-			{"k2", required_argument, NULL, '2'},
-			{"cdb", required_argument, NULL, 'c'},
-			{"verbose", no_argument, NULL, 'v'},
-			{0, 0, 0, 0}
-		};
+	int cdb_count = 1;
 
-		int option_index = 0;
-		c = getopt_long(argc, argv, "0:1:2:c:v", opt, &option_index);
+	char *program_name = basename(strdup(argv[0]));
 
-		if (c == -1)
-			break;
+	char *short_opts = "0:1:2:c:vh";
+	const struct option long_opts[] = {
+		/* {name, has_arg, flag, val} */
+		{"k0", required_argument, NULL, '0'},
+		{"k1", required_argument, NULL, '1'},
+		{"k2", required_argument, NULL, '2'},
+		{"cdb", required_argument, NULL, 'c'},
+		{"verbose", no_argument, NULL, 'v'},
+		{"help", no_argument, NULL, 'h'},
+		{NULL, 0, NULL, 0}
+	};
 
+	int option_index = 0;
+	int c = 0;
+	while ((c = getopt_long(argc, argv, short_opts, long_opts,
+				&option_index)) != -1) {
 		switch (c) {
 			case '0':
 				k0 = atoi(optarg);
@@ -101,9 +125,15 @@ static void process_options(int argc, char *const argv[])
 				verbose = true;
 				break;
 			case 0:
-				// flags set by getopt_long()
+				/* flags set by getopt_long() */
+				break;
+			case 'h':
+				print_usage(stdout, program_name);
+				exit(EXIT_SUCCESS);
 				break;
 			case '?':
+				print_usage(stderr, program_name);
+				exit(EXIT_FAILURE);
 				break;
 			default:
 				abort();

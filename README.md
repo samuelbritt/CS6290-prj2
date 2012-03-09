@@ -32,6 +32,9 @@ DESCRIPTION:
 OPTIONS:
   The following options are available:
 
+  - `-h`, `--help`
+      Print help message and exit.
+
   - `-v`, `--verbose`
       Verbose mode: print the progress of the simulation; e.g. print
       notifications when an instruction is fetched, dispatched, etc.
