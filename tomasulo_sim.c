@@ -74,7 +74,7 @@ struct options {
 	FILE *trace_file;
 };
 
-/* Fetches N instructions and puts them in the dispatch queueu */
+/* Fetches N instructions and puts them in the dispatch queue */
 static void instruction_fetch()
 {
 	exit(1);	/* TODO */
