@@ -181,7 +181,7 @@ int main(int argc, char * const argv[])
 	struct reservation_station *sched_queue;
 	struct int_register reg_file[ARCH_REGISTER_COUNT];
 
-	struct options options  = {
+	struct options opt  = {
 		.fu0_count = DEFAULT_FU0_COUNT,
 		.fu1_count = DEFAULT_FU1_COUNT,
 		.fu2_count = DEFAULT_FU2_COUNT,
@@ -189,12 +189,12 @@ int main(int argc, char * const argv[])
 		.fetch_rate = DEFAULT_FETCH_RATE,
 		.trace_file = NULL,
 	};
-	process_args(argc, argv, &options);
+	process_args(argc, argv, &opt);
 
-	struct cdb cdb_count[DEFAULT_CDB_COUNT];
-	struct func_unit fu0[DEFAULT_FU0_COUNT];
-	struct func_unit fu1[DEFAULT_FU1_COUNT];
-	struct func_unit fu2[DEFAULT_FU2_COUNT];
+	struct cdb cdb_count[opt.cdb_count];
+	struct func_unit fu0[opt.fu0_count];
+	struct func_unit fu1[opt.fu1_count];
+	struct func_unit fu2[opt.fu2_count];
 	struct func_unit *fus[] = {fu0, fu1, fu2};
 
 
