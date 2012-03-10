@@ -74,6 +74,50 @@ struct options {
 	FILE *trace_file;
 };
 
+/* Fetches N instructions and puts them in the dispatch queueu */
+static void instruction_fetch()
+{
+	exit(1);	/* TODO */
+}
+
+/* Dispatches instrcutions to the scheduler */
+static void dispatch()
+{
+	exit(1);	/* TODO */
+}
+
+/* Schedules instructions to be run */
+static void schedule()
+{
+	exit(1);	/* TODO */
+}
+
+/* Executes an instruction */
+static void execute()
+{
+	exit(1);	/* TODO */
+}
+
+/* Writes results */
+static void state_update()
+{
+	exit(1);	/* TODO */
+}
+
+/* Runs the actual tomosulo pipeline*/
+static void tomasulo_sim()
+{
+	int clock = 0;
+	while (1) {
+		state_update();
+		execute();
+		schedule();
+		dispatch();
+		instruction_fetch();
+		clock++;
+	}
+}
+
 /* Prints usage information. Does not exit */
 static void print_usage(FILE *fp, char *program_name)
 {
@@ -98,11 +142,6 @@ static void print_usage(FILE *fp, char *program_name)
 static void process_args(int argc, char *const argv[],
 			 struct options *opt)
 {
-	int k0 = 0;
-	int k1 = 1;
-	int k2 = 2;
-	int cdb_count = 1;
-
 	char *program_name = basename(strdup(argv[0]));
 
 	char *short_opts = "0:1:2:c:vh";
@@ -191,13 +230,21 @@ int main(int argc, char * const argv[])
 	};
 	process_args(argc, argv, &opt);
 
-	struct cdb cdb_count[opt.cdb_count];
+	struct cdb cdbs[opt.cdb_count];
 	struct func_unit fu0[opt.fu0_count];
 	struct func_unit fu1[opt.fu1_count];
 	struct func_unit fu2[opt.fu2_count];
 	struct func_unit *fus[] = {fu0, fu1, fu2};
+	/* TODO set latencies. Set each fu type individually? Have a table
+	 * that maps fu type to latency? Have separate structs for each fu
+	 * type? */
 
+	struct instruction inst;
+	while (!feof(opt.trace_file)) {
+		fscanf(opt.trace_file, "%p %d %d %d %d",
+		       &inst.addr, &inst.fu_type, &inst.dest_reg_num,
+		       &inst.src1_reg_num, &inst.src2_reg_num);
+	}
 
-	printf("Hello world\n");
 	return 0;
 }
