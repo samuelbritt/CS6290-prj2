@@ -167,6 +167,7 @@ static void process_args(int argc, char *const argv[],
 	      opt->cdb_count > 0 &&
 	      opt->fetch_rate > 0 &&
 	      opt->trace_file != NULL)) {
+		fprintf(stderr, "Error: invalid argument\n");
 		print_usage(stderr, program_name);
 		exit(EXIT_FAILURE);
 	}
