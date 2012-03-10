@@ -11,6 +11,9 @@
 /* Number of architectural registers */
 #define ARCH_REGISTER_COUNT 128
 
+/* Number of instructions to fetch each cycle */
+#define DEFAULT_FETCH_RATE 1
+
 /* Number of CDBs */
 #define DEFAULT_CDB_COUNT 1
 
@@ -62,6 +65,15 @@ struct func_unit {
 	int latency;
 };
 
+struct options {
+	int fu0_count;
+	int fu1_count;
+	int fu2_count;
+	int cdb_count;
+	int fetch_rate;
+	FILE *trace_file;
+};
+
 /* Prints usage information. Does not exit */
 static void print_usage(FILE *fp, char *program_name)
 {
@@ -83,7 +95,8 @@ static void print_usage(FILE *fp, char *program_name)
 		"\n");
 }
 
-static void process_options(int argc, char *const argv[])
+static void process_args(int argc, char *const argv[],
+			 struct options *opt)
 {
 	int k0 = 0;
 	int k1 = 1;
@@ -110,16 +123,16 @@ static void process_options(int argc, char *const argv[])
 				&option_index)) != -1) {
 		switch (c) {
 			case '0':
-				k0 = atoi(optarg);
+				opt->fu0_count = atoi(optarg);
 				break;
 			case '1':
-				k1 = atoi(optarg);
+				opt->fu1_count = atoi(optarg);
 				break;
 			case '2':
-				k2 = atoi(optarg);
+				opt->fu2_count = atoi(optarg);
 				break;
 			case 'c':
-				cdb_count = atoi(optarg);
+				opt->cdb_count = atoi(optarg);
 				break;
 			case 'v':
 				verbose = true;
@@ -140,16 +153,26 @@ static void process_options(int argc, char *const argv[])
 		}
 	}
 
+	if ((argc - optind) != 2) {
+		print_usage(stderr, program_name);
+		exit(EXIT_FAILURE);
+	}
+
+	opt->fetch_rate = atoi(argv[optind++]);
+	opt->trace_file = fopen(argv[optind++], "r");
+
+	if (!(opt->fu0_count > 0 &&
+	      opt->fu1_count > 0 &&
+	      opt->fu2_count > 0 &&
+	      opt->cdb_count > 0 &&
+	      opt->fetch_rate > 0 &&
+	      opt->trace_file != NULL)) {
+		print_usage(stderr, program_name);
+		exit(EXIT_FAILURE);
+	}
+
 	if (verbose)
 		printf("Running in verbose mode\n");
-	printf("ks: %d, %d, %d\n", k0, k1, k2);
-	printf("cdbs: %d\n", cdb_count);
-
-	printf("args: ");
-	while (optind < argc) {
-		printf("%s ", argv[optind++]);
-	}
-	printf("\n");
 }
 
 int main(int argc, char * const argv[])
@@ -157,14 +180,22 @@ int main(int argc, char * const argv[])
 	struct reservation_station *sched_queue;
 	struct int_register reg_file[ARCH_REGISTER_COUNT];
 
-	struct cdb cdb_count[DEFAULT_CDB_COUNT];
+	struct options options  = {
+		.fu0_count = DEFAULT_FU0_COUNT,
+		.fu1_count = DEFAULT_FU1_COUNT,
+		.fu2_count = DEFAULT_FU2_COUNT,
+		.cdb_count = DEFAULT_CDB_COUNT,
+		.fetch_rate = DEFAULT_FETCH_RATE,
+		.trace_file = NULL,
+	};
+	process_args(argc, argv, &options);
 
+	struct cdb cdb_count[DEFAULT_CDB_COUNT];
 	struct func_unit fu0[DEFAULT_FU0_COUNT];
 	struct func_unit fu1[DEFAULT_FU1_COUNT];
 	struct func_unit fu2[DEFAULT_FU2_COUNT];
 	struct func_unit *fus[] = {fu0, fu1, fu2};
 
-	process_options(argc, argv);
 
 	printf("Hello world\n");
 	return 0;
