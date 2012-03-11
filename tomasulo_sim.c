@@ -5,6 +5,9 @@
 #include <libgen.h>
 #include <string.h>
 
+#include "common.h"
+#include "deque.h"
+
 /* Max number of source registers for any instruction */
 #define SRC_REGISTER_COUNT 2
 
@@ -75,9 +78,16 @@ struct options {
 };
 
 /* Fetches N instructions and puts them in the dispatch queue */
-static void instruction_fetch()
+static void instruction_fetch(FILE *trace_file, int fetch_rate)
 {
-	exit(1);	/* TODO */
+	int instructions_fetched = 0;
+	while ((instructions_fetched++ < fetch_rate) && !feof(trace_file)) {
+		struct instruction *inst = emalloc(sizeof(*inst));
+		fscanf(trace_file, "%p %d %d %d %d",
+		       &inst->addr, &inst->fu_type, &inst->dest_reg_num,
+		       &inst->src1_reg_num, &inst->src2_reg_num);
+		/* TODO add inst to dispatch Q */
+	}
 }
 
 /* Dispatches instrcutions to the scheduler */
@@ -104,16 +114,26 @@ static void state_update()
 	exit(1);	/* TODO */
 }
 
-/* Runs the actual tomosulo pipeline*/
-static void tomasulo_sim()
+/* Runs the actual tomasulo pipeline*/
+static void tomasulo_sim(struct options *opt)
 {
+
+	struct cdb cdbs[opt->cdb_count];
+	struct func_unit fu0[opt->fu0_count];
+	struct func_unit fu1[opt->fu1_count];
+	struct func_unit fu2[opt->fu2_count];
+	struct func_unit *fus[] = {fu0, fu1, fu2};
+	/* TODO set latencies. Set each fu type individually? Have a table
+	 * that maps fu type to latency? Have separate structs for each fu
+	 * type? */
+
 	int clock = 0;
 	while (1) {
 		state_update();
 		execute();
 		schedule();
 		dispatch();
-		instruction_fetch();
+		instruction_fetch(opt->trace_file, opt->fetch_rate);
 		clock++;
 	}
 }
@@ -229,22 +249,7 @@ int main(int argc, char * const argv[])
 		.trace_file = NULL,
 	};
 	process_args(argc, argv, &opt);
-
-	struct cdb cdbs[opt.cdb_count];
-	struct func_unit fu0[opt.fu0_count];
-	struct func_unit fu1[opt.fu1_count];
-	struct func_unit fu2[opt.fu2_count];
-	struct func_unit *fus[] = {fu0, fu1, fu2};
-	/* TODO set latencies. Set each fu type individually? Have a table
-	 * that maps fu type to latency? Have separate structs for each fu
-	 * type? */
-
-	struct instruction inst;
-	while (!feof(opt.trace_file)) {
-		fscanf(opt.trace_file, "%p %d %d %d %d",
-		       &inst.addr, &inst.fu_type, &inst.dest_reg_num,
-		       &inst.src1_reg_num, &inst.src2_reg_num);
-	}
+	tomasulo_sim(&opt);
 
 	return 0;
 }
