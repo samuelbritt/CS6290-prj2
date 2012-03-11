@@ -1,3 +1,4 @@
 # Add all source files (not headers) here
 
-SIM_SRCS = tomasulo_sim.c
+SIM_SRCS = tomasulo_sim.c \
+	   deque.c
