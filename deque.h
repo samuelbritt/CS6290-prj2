@@ -8,6 +8,7 @@
 
 #include <stdbool.h>
 
+/* opaque pointers */
 typedef struct deque deque_t;
 typedef struct deque_node deque_node_t;
 
@@ -38,6 +39,7 @@ deque_node_t *deque_prepend(deque_t *deque, deque_node_t *node);
 /*
  * Reading functions
  */
+/* returns true if empty */
 bool deque_is_empty(deque_t *deque);
 
 /* start(), next(), and end() allow walking through deque */
@@ -49,6 +51,9 @@ deque_node_t *deque_next(deque_t *deque, deque_node_t *node);
 
 /* returns true if `node` is the last in the deque */
 bool deque_end(deque_t *deque, deque_node_t *node);
+
+/* returns the data in the node */
+void *deque_node_data(deque_node_t *node);
 
 
 /*

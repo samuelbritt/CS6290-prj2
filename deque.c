@@ -38,6 +38,11 @@ bool deque_is_empty(deque_t *deque)
 	return deque->head->next == deque->tail;
 }
 
+void *deque_node_data(deque_node_t *node)
+{
+	return node->data;
+}
+
 deque_t *deque_create()
 {
 	deque_t *dq = emalloc(sizeof(*dq));
@@ -112,8 +117,6 @@ deque_node_t *deque_append(deque_t *deque, deque_node_t *node)
 
 deque_node_t *deque_delete_node(deque_t *deque, deque_node_t *node)
 {
-	if (node == deque->head)
-		deque->head = node->next;
 	node->prev->next = node->next;
 	node->next->prev = node->prev;
 	return node;

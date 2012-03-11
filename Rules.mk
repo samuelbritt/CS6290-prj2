@@ -1,6 +1,6 @@
 
 CC 	= gcc
-CFLAGS	= -pedantic -Wall -std=gnu99 -pthread -O2 $(DEBUG)
+CFLAGS	= -pedantic -Wall -std=gnu99 -O2 $(DEBUG)
 INCLUDES =
 LDFLAGS =
 LDLIBS	=

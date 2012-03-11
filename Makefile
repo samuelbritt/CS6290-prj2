@@ -1,5 +1,7 @@
 # This file hopefully should not need to be modified often
 
+export ROOT = $(shell pwd)
+
 include Rules.mk
 include sources.mk
 
