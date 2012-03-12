@@ -141,36 +141,47 @@ static void tomasulo_sim(struct options *opt)
 /* Prints usage information. Does not exit */
 static void print_usage(FILE *fp, char *program_name)
 {
-	fprintf(fp, "\nUsage:  %s [OPTIONS] <fetch_rate> <trace_file>\n",
-		program_name);
 	fprintf(fp,
 		"\n"
-		"REQUIRED ARGS:\n"
-		"    <fetch_rate>      Number of instructions to fetch per cycle\n"
-		"    <trace_file>      File containing instructions to simulate\n"
-		"\n"
+		"USAGE:   %s --help\n"
+		"         %s [-v] <fetch-rate> <k0> <k1> <k2> <cdb-count> <trace_file>\n"
+		"         %s [-v] [-n <fetch-rate>] [--k0=<count>] [--k1=<count>] [--k2=<count>] [-c <count>] <trace_file>\n",
+		program_name, program_name, program_name);
+	fprintf(fp,
 		"OPTIONS:\n"
-		"    -h --help         Display help and exit\n"
-		"    -v --verbose      Print simulation progress to stdout\n"
-		"    -c <n> --cdb=<n>  Run with <n> common data buses\n"
-		"    --k0=<n>          Run with <n> instances of FU type 0\n"
-		"    --k1=<n>          Run with <n> instances of FU type 1\n"
-		"    --k2=<n>          Run with <n> instances of FU type 2\n"
+		"    -h --help                  Display this help and exit\n"
+		"    -v --verbose               Print simulation progress to stdout\n"
+		"    -n <n> --fetch-rate=<n>    Fetch <n> instructions per cycle\n"
+		"    -c <count> --cdb=<count>   Run with <count> common data buses\n"
+		"    --k0=<count>               Run with <count> instances of FU type 0\n"
+		"    --k1=<count>               Run with <count> instances of FU type 1\n"
+		"    --k2=<count>               Run with <count> instances of FU type 2\n"
 		"\n");
 }
 
+/* Process arguments passed to the simulation.
+ *
+ * We accept arguments in one of two ways. The first way is all positional
+ * arguments, specifying everything in a specific order. Since this can be
+ * difficult to read and remember, the second is by using named optional
+ * arguments, and a single positional argument of the input trace. There is no
+ * in-between: either all arguments have to be positional, or none of them can
+ * be. If the positional form is used, any additional optional arguments will be
+ * overridden. */
 static void process_args(int argc, char *const argv[],
 			 struct options *opt)
 {
 	char *program_name = basename(strdup(argv[0]));
+	char *trace_file_path;
 
-	char *short_opts = "0:1:2:c:vh";
+	char *short_opts = "0:1:2:c:n:vh";
 	const struct option long_opts[] = {
 		/* {name, has_arg, flag, val} */
 		{"k0", required_argument, NULL, '0'},
 		{"k1", required_argument, NULL, '1'},
 		{"k2", required_argument, NULL, '2'},
 		{"cdb", required_argument, NULL, 'c'},
+		{"fetch-rate", required_argument, NULL, 'n'},
 		{"verbose", no_argument, NULL, 'v'},
 		{"help", no_argument, NULL, 'h'},
 		{NULL, 0, NULL, 0}
@@ -193,6 +204,9 @@ static void process_args(int argc, char *const argv[],
 			case 'c':
 				opt->cdb_count = atoi(optarg);
 				break;
+			case 'n':
+				opt->fetch_rate = atoi(optarg);
+				break;
 			case 'v':
 				verbose = true;
 				break;
@@ -212,27 +226,51 @@ static void process_args(int argc, char *const argv[],
 		}
 	}
 
-	if ((argc - optind) != 2) {
+	/* Accept either a single positional argument, or all positional
+	 * arguments */
+	int positional_argc = argc - optind;
+	switch (positional_argc) {
+		case 1:
+			trace_file_path = argv[optind];
+			break;
+		case 6:
+			opt->fetch_rate = atoi(argv[optind++]);
+			opt->fu0_count  = atoi(argv[optind++]);
+			opt->fu1_count  = atoi(argv[optind++]);
+			opt->fu2_count  = atoi(argv[optind++]);
+			opt->cdb_count  = atoi(argv[optind++]);
+			trace_file_path = argv[optind];
+			break;
+		default:
+			fprintf(stderr, "Error: invalid arguments\n");
+			print_usage(stderr, program_name);
+			exit(EXIT_FAILURE);
+	}
+	opt->trace_file = fopen(trace_file_path, "r");
+
+	if (opt->fu0_count < 1 ||
+	    opt->fu1_count < 1 ||
+	    opt->fu2_count < 1 ||
+	    opt->cdb_count < 1 ||
+	    opt->fetch_rate < 1 ||
+	    opt->trace_file == NULL) {
+		fprintf(stderr, "Error: invalid arguments\n");
 		print_usage(stderr, program_name);
 		exit(EXIT_FAILURE);
 	}
 
-	opt->fetch_rate = atoi(argv[optind++]);
-	opt->trace_file = fopen(argv[optind++], "r");
-
-	if (!(opt->fu0_count > 0 &&
-	      opt->fu1_count > 0 &&
-	      opt->fu2_count > 0 &&
-	      opt->cdb_count > 0 &&
-	      opt->fetch_rate > 0 &&
-	      opt->trace_file != NULL)) {
-		fprintf(stderr, "Error: invalid argument\n");
-		print_usage(stderr, program_name);
-		exit(EXIT_FAILURE);
-	}
-
-	if (verbose)
+	if (verbose) {
 		printf("Running in verbose mode\n");
+		printf("Provided options:\n"
+		       "    trace-file: %s\n"
+		       "    fetch-rate: %d\n"
+		       "    cdb-count:  %d\n"
+		       "    k0:         %d\n"
+		       "    k1:         %d\n"
+		       "    k2:         %d\n",
+		       trace_file_path, opt->fetch_rate, opt->cdb_count,
+		       opt->fu0_count, opt->fu1_count, opt->fu2_count);
+	}
 }
 
 int main(int argc, char * const argv[])
