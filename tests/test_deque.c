@@ -3,17 +3,27 @@
 #include "CuTest.h"
 
 #include <deque.c>
+
 /* Tests */
-void test_deque_create(CuTest *tc)
+
+void test_deque_create_destroy(CuTest *tc)
 {
 	deque_t *d = NULL;
 	d = deque_create();
 	CuAssertPtrNotNull(tc, d);
+	deque_destroy(d);
 
+	deque_node_t *n = NULL;
+	n = deque_node_create(NULL);
+	CuAssertPtrNotNull(tc, n);
+	deque_node_destroy(n);
+}
+
+void test_assign(CuTest *tc)
+{
 	deque_node_t *n = NULL;
 	int i = 4;
 	n = deque_node_create(&i);
-	CuAssertPtrNotNull(tc, n);
 	CuAssertIntEquals(tc, i, *(int *) deque_node_get(n));
 }
 
@@ -119,10 +129,11 @@ CuSuite* test_deque_get_suite()
 	CuSuite *suite = CuSuiteNew();
 
 	/* SUITE_ADD_TEST calls */
-	SUITE_ADD_TEST(suite, test_deque_create);
+	SUITE_ADD_TEST(suite, test_deque_create_destroy);
+	SUITE_ADD_TEST(suite, test_assign);
+	SUITE_ADD_TEST(suite, test_null);
 	SUITE_ADD_TEST(suite, test_deque_append);
 	SUITE_ADD_TEST(suite, test_deque_prepend);
-	SUITE_ADD_TEST(suite, test_null);
 	SUITE_ADD_TEST(suite, test_foreach);
 
 	return suite;
