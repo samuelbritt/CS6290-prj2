@@ -52,7 +52,7 @@ deque_node_t *deque_first(deque_t *deque);
 deque_node_t *deque_next(deque_node_t *node);
 deque_node_t *deque_last(deque_t *deque);
 
-/* Call `func` on every node in deque. Convience method for using first(),
+/* Call `func` on every node in deque. Convenience method for using first(),
  * next() and last() to iterate */
 typedef void (*deque_func)(void *node_data, void *user_data);
 void deque_foreach(deque_t *d, deque_func user_func, void *user_data);

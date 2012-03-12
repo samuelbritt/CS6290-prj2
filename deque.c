@@ -12,7 +12,7 @@ struct deque_node {
 };
 
 struct deque {
-	/* These are sentinals. First real node is head->next, and last node
+	/* These are sentinels. First real node is head->next, and last node
 	 * is tail->prev */
 	struct deque_node *head;
 	struct deque_node *tail;
