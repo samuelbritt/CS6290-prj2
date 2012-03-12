@@ -12,12 +12,11 @@ Tomasulo Algorithm
  - Run `make clean` to remove all compiled files and generated
    dependency files.
 
-
 ####SYNOPSIS:
 
-		    tomalulo_sim [-v] <fetch-rate> <k0> <k1> <k2> <cdb-count> <trace_file>
-		    tomalulo_sim [-v] [-n <fetch-rate>] [--k0=<count>] [--k1=<count>] [--k2=<count>] [-c <count>] <trace_file>
-		    tomalulo_sim --help
+    tomalulo_sim [-v] <fetch-rate> <k0> <k1> <k2> <cdb-count> <trace_file>
+    tomalulo_sim [-v] [-n <fetch-rate>] [--k0=<count>] [--k1=<count>] [--k2=<count>] [-c <count>] <trace_file>
+    tomalulo_sim --help
 
 ####DESCRIPTION:
   The program can be run in one of two forms. In the first form, all
@@ -28,7 +27,7 @@ Tomasulo Algorithm
   positional, or none of them can be. If the positional form is used,
   any additional optional arguments will be overridden.
 
-  In either form, <trace_file> is the final positional argument. It
+  In either form, `<trace_file>` is the final positional argument. It
   must be the path to a space-delimited file where each line contains
   instruction address (in hex), the functional unit type (0, 1, or
   2), the destination register, and the first and second source
@@ -42,22 +41,30 @@ Tomasulo Algorithm
 ####OPTIONS:
   The following options are available:
 
-  - `-h`, `--help` <\br>
+  - `-h`, `--help`
+
       Print help message and exit.
 
-  - `-v`, `--verbose` <\br>
+  - `-v`, `--verbose`
+
       Verbose mode: print the progress of the simulation; e.g. print
       notifications when an instruction is fetched, dispatched, etc.
 
-  - `--fetch-rate=<value>` or `-n=<value>` <\br>
+  - `--fetch-rate=<value>` or `-n=<value>`
+
       Set the fetch rate for the simulation; i.e., the number of
       instructions fetched per cycle. Defaults to 1.
 
-  - `--k0=<value>` `--k1=<value>` `--k2=<value>` <\br>
+  - `--k0=<value>`
+
+    `--k1=<value>`
+
+    `--k2=<value>`
+
       Set the number of functional units for functional unit type 0,
       1, or 2. Defaults to 1.
 
-  - `--cdb=<value>`, `-c=<value>` <\br>
+  - `--cdb=<value>`, `-c=<value>`
+
       Set the number of common data busses for the simulation.
       Defaults to 1.
-
