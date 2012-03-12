@@ -1,32 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <getopt.h>
-#include <libgen.h>
-#include <string.h>
 
+#include "tomasulo_sim.h"
 #include "common.h"
 #include "deque.h"
 
-/* Max number of source registers for any instruction */
-#define SRC_REGISTER_COUNT 2
-
-/* Number of architectural registers */
-#define ARCH_REGISTER_COUNT 128
-
-/* Number of instructions to fetch each cycle */
-#define DEFAULT_FETCH_RATE 1
-
-/* Number of CDBs */
-#define DEFAULT_CDB_COUNT 1
-
-/* Number of FUs of type 0, 1, 2 */
-#define DEFAULT_FU0_COUNT 1
-#define DEFAULT_FU1_COUNT 1
-#define DEFAULT_FU2_COUNT 1
-
 /* Print information at each step */
-static int verbose;
+int verbose = 0;
 
 struct int_register {
 	bool ready;
@@ -68,15 +49,6 @@ struct func_unit {
 	int latency;
 };
 
-struct options {
-	int fu0_count;
-	int fu1_count;
-	int fu2_count;
-	int cdb_count;
-	int fetch_rate;
-	FILE *trace_file;
-};
-
 /* Fetches N instructions and puts them in the dispatch queue */
 static void instruction_fetch(FILE *trace_file, int fetch_rate)
 {
@@ -115,8 +87,11 @@ static void state_update()
 }
 
 /* Runs the actual tomasulo pipeline*/
-static void tomasulo_sim(struct options *opt)
+void tomasulo_sim(struct options *opt)
 {
+
+	struct reservation_station *sched_queue;
+	struct int_register reg_file[ARCH_REGISTER_COUNT];
 
 	struct cdb cdbs[opt->cdb_count];
 	struct func_unit fu0[opt->fu0_count];
@@ -138,156 +113,3 @@ static void tomasulo_sim(struct options *opt)
 	}
 }
 
-/* Prints usage information. Does not exit */
-static void print_usage(FILE *fp, char *program_name)
-{
-	fprintf(fp,
-		"\n"
-		"USAGE:   %s --help\n"
-		"         %s [-v] <fetch-rate> <k0> <k1> <k2> <cdb-count> <trace_file>\n"
-		"         %s [-v] [-n <fetch-rate>] [--k0=<count>] [--k1=<count>] [--k2=<count>] [-c <count>] <trace_file>\n",
-		program_name, program_name, program_name);
-	fprintf(fp,
-		"OPTIONS:\n"
-		"    -h --help                  Display this help and exit\n"
-		"    -v --verbose               Print simulation progress to stdout\n"
-		"    -n <n> --fetch-rate=<n>    Fetch <n> instructions per cycle\n"
-		"    -c <count> --cdb=<count>   Run with <count> common data buses\n"
-		"    --k0=<count>               Run with <count> instances of FU type 0\n"
-		"    --k1=<count>               Run with <count> instances of FU type 1\n"
-		"    --k2=<count>               Run with <count> instances of FU type 2\n"
-		"\n");
-}
-
-/* Process arguments passed to the simulation.
- *
- * We accept arguments in one of two ways. The first way is all positional
- * arguments, specifying everything in a specific order. Since this can be
- * difficult to read and remember, the second is by using named optional
- * arguments, and a single positional argument of the input trace. There is no
- * in-between: either all arguments have to be positional, or none of them can
- * be. If the positional form is used, any additional optional arguments will be
- * overridden. */
-static void process_args(int argc, char *const argv[],
-			 struct options *opt)
-{
-	char *program_name = basename(strdup(argv[0]));
-	char *trace_file_path;
-
-	char *short_opts = "0:1:2:c:n:vh";
-	const struct option long_opts[] = {
-		/* {name, has_arg, flag, val} */
-		{"k0", required_argument, NULL, '0'},
-		{"k1", required_argument, NULL, '1'},
-		{"k2", required_argument, NULL, '2'},
-		{"cdb", required_argument, NULL, 'c'},
-		{"fetch-rate", required_argument, NULL, 'n'},
-		{"verbose", no_argument, NULL, 'v'},
-		{"help", no_argument, NULL, 'h'},
-		{NULL, 0, NULL, 0}
-	};
-
-	int option_index = 0;
-	int c = 0;
-	while ((c = getopt_long(argc, argv, short_opts, long_opts,
-				&option_index)) != -1) {
-		switch (c) {
-			case '0':
-				opt->fu0_count = atoi(optarg);
-				break;
-			case '1':
-				opt->fu1_count = atoi(optarg);
-				break;
-			case '2':
-				opt->fu2_count = atoi(optarg);
-				break;
-			case 'c':
-				opt->cdb_count = atoi(optarg);
-				break;
-			case 'n':
-				opt->fetch_rate = atoi(optarg);
-				break;
-			case 'v':
-				verbose = true;
-				break;
-			case 0:
-				/* flags set by getopt_long() */
-				break;
-			case 'h':
-				print_usage(stdout, program_name);
-				exit(EXIT_SUCCESS);
-				break;
-			case '?':
-				print_usage(stderr, program_name);
-				exit(EXIT_FAILURE);
-				break;
-			default:
-				abort();
-		}
-	}
-
-	/* Accept either a single positional argument, or all positional
-	 * arguments */
-	int positional_argc = argc - optind;
-	switch (positional_argc) {
-		case 1:
-			trace_file_path = argv[optind];
-			break;
-		case 6:
-			opt->fetch_rate = atoi(argv[optind++]);
-			opt->fu0_count  = atoi(argv[optind++]);
-			opt->fu1_count  = atoi(argv[optind++]);
-			opt->fu2_count  = atoi(argv[optind++]);
-			opt->cdb_count  = atoi(argv[optind++]);
-			trace_file_path = argv[optind];
-			break;
-		default:
-			fprintf(stderr, "Error: invalid arguments\n");
-			print_usage(stderr, program_name);
-			exit(EXIT_FAILURE);
-	}
-	opt->trace_file = fopen(trace_file_path, "r");
-
-	if (opt->fu0_count < 1 ||
-	    opt->fu1_count < 1 ||
-	    opt->fu2_count < 1 ||
-	    opt->cdb_count < 1 ||
-	    opt->fetch_rate < 1 ||
-	    opt->trace_file == NULL) {
-		fprintf(stderr, "Error: invalid arguments\n");
-		print_usage(stderr, program_name);
-		exit(EXIT_FAILURE);
-	}
-
-	if (verbose) {
-		printf("Running in verbose mode\n");
-		printf("Provided options:\n"
-		       "    trace-file: %s\n"
-		       "    fetch-rate: %d\n"
-		       "    cdb-count:  %d\n"
-		       "    k0:         %d\n"
-		       "    k1:         %d\n"
-		       "    k2:         %d\n",
-		       trace_file_path, opt->fetch_rate, opt->cdb_count,
-		       opt->fu0_count, opt->fu1_count, opt->fu2_count);
-	}
-}
-
-int main(int argc, char * const argv[])
-{
-	struct reservation_station *sched_queue;
-	struct int_register reg_file[ARCH_REGISTER_COUNT];
-
-	struct options opt  = {
-		.fu0_count = DEFAULT_FU0_COUNT,
-		.fu1_count = DEFAULT_FU1_COUNT,
-		.fu2_count = DEFAULT_FU2_COUNT,
-		.cdb_count = DEFAULT_CDB_COUNT,
-		.fetch_rate = DEFAULT_FETCH_RATE,
-		.trace_file = NULL,
-	};
-	process_args(argc, argv, &opt);
-	tomasulo_sim(&opt);
-
-	return 0;
-}
