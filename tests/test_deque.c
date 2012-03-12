@@ -25,6 +25,7 @@ void test_assign(CuTest *tc)
 	int i = 4;
 	n = deque_node_create(&i);
 	CuAssertIntEquals(tc, i, *(int *) deque_node_get(n));
+	deque_node_destroy(n);
 }
 
 void test_null(CuTest *tc)
@@ -43,6 +44,8 @@ void test_null(CuTest *tc)
 	deque_node_t *n = deque_node_create(&i);
 	CuAssertPtrEquals(tc, NULL, n->prev);
 	CuAssertPtrEquals(tc, NULL, n->next);
+	deque_node_destroy(n);
+	deque_destroy(d);
 }
 
 void test_deque_append(CuTest *tc)
@@ -66,6 +69,7 @@ void test_deque_append(CuTest *tc)
 			CuAssertPtrEquals(tc, nodes[j],
 					  deque_next(nodes[j-1]));
 	}
+	deque_destroy(d);
 }
 
 void test_deque_prepend(CuTest *tc)
@@ -89,6 +93,7 @@ void test_deque_prepend(CuTest *tc)
 			CuAssertPtrEquals(tc, nodes[j-1],
 					  deque_next(nodes[j]));
 	}
+	deque_destroy(d);
 }
 
 static void print_int(void *i, void *str)
@@ -97,6 +102,85 @@ static void print_int(void *i, void *str)
 	char s2[1024];
 	sprintf(s2, "%d -> ", *(int *) i);
 	strcat(s1, s2);
+}
+
+void test_insert(CuTest *tc)
+{
+	deque_t *d = deque_create();
+	int node_count = 3;
+	deque_node_t *nodes[node_count];
+	int vals[node_count];
+	for (int i = 0; i < node_count; ++i) {
+		vals[i] = i;
+		nodes[i] = deque_node_create(&vals[i]);
+	}
+
+	deque_append(d, nodes[0]);
+	deque_insert_after(nodes[0], nodes[1]);
+	deque_insert_before(nodes[0], nodes[2]);
+
+	CuAssertPtrEquals(tc, nodes[2], deque_first(d));
+	CuAssertPtrEquals(tc, nodes[0], deque_next(nodes[2]));
+	CuAssertPtrEquals(tc, nodes[1], deque_next(nodes[0]));
+	CuAssertPtrEquals(tc, nodes[1], deque_last(d));
+
+	deque_destroy(d);
+}
+
+void test_remove(CuTest *tc)
+{
+	deque_t *d = deque_create();
+	int node_count = 3;
+	deque_node_t *nodes[node_count];
+	int vals[node_count];
+	for (int i = 0; i < node_count; ++i) {
+		vals[i] = i;
+		nodes[i] = deque_node_create(&vals[i]);
+		deque_append(d, nodes[i]);
+	}
+
+	deque_node_t *n0, *n1, *n2;
+	n1 = deque_node_remove(d, nodes[1]);
+	CuAssertPtrEquals(tc, nodes[1], n1);
+	CuAssertPtrEquals(tc, nodes[0], deque_first(d));
+	CuAssertPtrEquals(tc, nodes[2], deque_next(nodes[0]));
+	CuAssertPtrEquals(tc, nodes[2], deque_last(d));
+
+	n2 = deque_node_remove(d, nodes[2]);
+	CuAssertPtrEquals(tc, nodes[2], n2);
+	CuAssertPtrEquals(tc, nodes[0], deque_first(d));
+	CuAssertPtrEquals(tc, nodes[0], deque_last(d));
+
+	n0 = deque_node_remove(d, nodes[0]);
+	CuAssertPtrEquals(tc, nodes[0], n0);
+	CuAssertTrue(tc, deque_is_empty(d));
+
+	deque_append(d, nodes[0]);
+	deque_append(d, nodes[1]);
+	deque_append(d, nodes[2]);
+
+	CuAssertPtrEquals(tc, nodes[1], n1);
+	CuAssertPtrEquals(tc, nodes[0], deque_first(d));
+	CuAssertPtrEquals(tc, nodes[1], deque_next(nodes[0]));
+	CuAssertPtrEquals(tc, nodes[2], deque_next(nodes[1]));
+	CuAssertPtrEquals(tc, nodes[2], deque_last(d));
+
+	n2 = deque_node_remove(d, nodes[2]);
+	CuAssertPtrEquals(tc, nodes[2], n2);
+	CuAssertPtrEquals(tc, nodes[0], deque_first(d));
+	CuAssertPtrEquals(tc, nodes[1], deque_next(nodes[0]));
+	CuAssertPtrEquals(tc, nodes[1], deque_last(d));
+
+	n0 = deque_node_remove(d, nodes[0]);
+	CuAssertPtrEquals(tc, nodes[0], n0);
+	CuAssertPtrEquals(tc, nodes[1], deque_first(d));
+	CuAssertPtrEquals(tc, nodes[1], deque_last(d));
+
+	n1 = deque_node_remove(d, nodes[1]);
+	CuAssertPtrEquals(tc, nodes[1], n1);
+	CuAssertTrue(tc, deque_is_empty(d));
+
+	deque_destroy(d);
 }
 
 void test_foreach(CuTest *tc)
@@ -120,6 +204,7 @@ void test_foreach(CuTest *tc)
 
 	deque_foreach(d, print_int, s_act);
 	CuAssertStrEquals(tc, s_exp, s_act);
+	deque_destroy(d);
 }
 
 
@@ -134,7 +219,9 @@ CuSuite* test_deque_get_suite()
 	SUITE_ADD_TEST(suite, test_null);
 	SUITE_ADD_TEST(suite, test_deque_append);
 	SUITE_ADD_TEST(suite, test_deque_prepend);
+	SUITE_ADD_TEST(suite, test_insert);
 	SUITE_ADD_TEST(suite, test_foreach);
+	SUITE_ADD_TEST(suite, test_remove);
 
 	return suite;
 }
