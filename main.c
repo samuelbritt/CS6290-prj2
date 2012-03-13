@@ -42,7 +42,8 @@ static void print_usage(FILE *fp, char *program_name)
 static void process_args(int argc, char *const argv[],
 			 struct options *opt)
 {
-	char *program_name = basename(strdup(argv[0]));
+	char *arg0 = strdup(argv[0]);
+	char *program_name = basename(arg0);
 	char *trace_file_path;
 
 	char *short_opts = "0:1:2:c:n:vh";
@@ -142,7 +143,7 @@ static void process_args(int argc, char *const argv[],
 		       trace_file_path, opt->fetch_rate, opt->cdb_count,
 		       opt->fu0_count, opt->fu1_count, opt->fu2_count);
 	}
-	free(program_name);
+	free(arg0);
 }
 
 int main(int argc, char * const argv[])

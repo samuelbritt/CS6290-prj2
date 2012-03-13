@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "CuTest.h"
 
 /* *_get_suite() declarations... */
@@ -15,6 +16,9 @@ void run_all_tests(void) {
 	CuSuiteSummary(suite, output);
 	CuSuiteDetails(suite, output);
 	printf("%s\n", output->buffer);
+
+	free(output);
+	free(suite);
 }
 
 int main(int argc, const char *argv[])

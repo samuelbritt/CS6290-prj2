@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdarg.h>
+#include <string.h>
 
 #include "tomasulo_sim.h"
 #include "common.h"
@@ -123,7 +124,7 @@ static void dispatch(deque_t *dispatch_queue, struct int_register reg_file[],
 {
 	while (!deque_is_empty(dispatch_queue)) {
 		struct instruction *inst = deque_delete_first(dispatch_queue);
-		vlog("Dispatching");
+		vlog("Dispatching Instruction %d\n", inst->id);
 		struct reservation_station *rs = dispatch_inst(inst, reg_file);
 		deque_append(sched_queue, rs);
 		free(inst);
@@ -152,6 +153,7 @@ static void state_update()
 void tomasulo_sim(struct options *opt)
 {
 	struct int_register reg_file[ARCH_REGISTER_COUNT];
+	memset(reg_file, 0, sizeof(reg_file));
 	struct cdb cdbs[opt->cdb_count];
 	struct func_unit fu0[opt->fu0_count];
 	struct func_unit fu1[opt->fu1_count];
@@ -173,8 +175,12 @@ void tomasulo_sim(struct options *opt)
 		instruction_fetch(opt->trace_file, opt->fetch_rate,
 				  dispatch_queue);
 		clock++;
-	} while (!(deque_is_empty(dispatch_queue) &&
-		   deque_is_empty(sched_queue)));
+	} while (!deque_is_empty(dispatch_queue)
+		 /* || !deque_is_empty(sched_queue) */
+		 );
 	vlog("Simulation complete.\n");
+
+	deque_destroy(dispatch_queue);
+	deque_destroy(sched_queue);
 }
 

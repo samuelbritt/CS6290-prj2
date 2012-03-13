@@ -38,6 +38,8 @@ void test_null(CuTest *tc)
 	CuAssertPtrEquals(tc, tail, head->next);
 	CuAssertPtrEquals(tc, head, tail->prev);
 	CuAssertPtrEquals(tc, NULL, tail->next);
+
+	deque_destroy(d);
 }
 
 void test_deque_append(CuTest *tc)
@@ -204,11 +206,10 @@ void test_foreach(CuTest *tc)
 	char s_exp[1024] = "";
 
 	int node_count = 10;
-	deque_node_t *nodes[node_count];
 	int vals[node_count];
 	for (int i = 0; i < node_count; ++i) {
 		vals[i] = i;
-		nodes[i] = deque_append(d, &vals[i]);
+		deque_append(d, &vals[i]);
 
 		print_int(&vals[i], s_exp);
 	}
@@ -217,7 +218,6 @@ void test_foreach(CuTest *tc)
 	CuAssertStrEquals(tc, s_exp, s_act);
 	deque_destroy(d);
 }
-
 
 /* Suite */
 CuSuite* test_deque_get_suite()
