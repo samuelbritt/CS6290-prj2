@@ -27,6 +27,6 @@ struct options {
 	FILE *trace_file;
 };
 
-void tomasulo_sim(struct options *opt);
+void tomasulo_sim(const struct options * const opt);
 
 #endif /* end of include guard: TOMASULO_SIM_H_ */
