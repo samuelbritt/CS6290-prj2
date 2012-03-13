@@ -149,16 +149,26 @@ static void state_update()
 	exit(1);	/* TODO */
 }
 
+/* wraps free() so you can pass into deque_foreach() */
+static void free_wrap(void *data, void *null)
+{
+	free(data);
+}
+
 /* Runs the actual tomasulo pipeline*/
 void tomasulo_sim(struct options *opt)
 {
 	struct int_register reg_file[ARCH_REGISTER_COUNT];
-	memset(reg_file, 0, sizeof(reg_file));
 	struct cdb cdbs[opt->cdb_count];
 	struct func_unit fu0[opt->fu0_count];
 	struct func_unit fu1[opt->fu1_count];
 	struct func_unit fu2[opt->fu2_count];
 	struct func_unit *fus[] = {fu0, fu1, fu2};
+	memset(reg_file, 0, sizeof(reg_file));
+	memset(cdbs, 0, sizeof(cdbs));
+	memset(fu0, 0, sizeof(fu0));
+	memset(fu1, 0, sizeof(fu1));
+	memset(fu2, 0, sizeof(fu2));
 	/* TODO set latencies. Set each fu type individually? Have a table
 	 * that maps fu type to latency? Have separate structs for each fu
 	 * type? */
@@ -181,6 +191,6 @@ void tomasulo_sim(struct options *opt)
 	vlog("Simulation complete.\n");
 
 	deque_destroy(dispatch_queue);
+	deque_foreach(sched_queue, free_wrap, NULL);
 	deque_destroy(sched_queue);
 }
-

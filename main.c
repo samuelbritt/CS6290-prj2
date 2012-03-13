@@ -158,6 +158,6 @@ int main(int argc, char * const argv[])
 	};
 	process_args(argc, argv, &opt);
 	tomasulo_sim(&opt);
-
+	fclose(opt.trace_file);
 	return 0;
 }
