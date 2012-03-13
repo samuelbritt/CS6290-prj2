@@ -142,6 +142,7 @@ static void process_args(int argc, char *const argv[],
 		       trace_file_path, opt->fetch_rate, opt->cdb_count,
 		       opt->fu0_count, opt->fu1_count, opt->fu2_count);
 	}
+	free(program_name);
 }
 
 int main(int argc, char * const argv[])
