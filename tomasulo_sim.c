@@ -10,6 +10,9 @@
 /* Print information at each step */
 int verbose = 0;
 
+/* Counter for the number of fetched instructions. Useful for tags */
+static int instruction_count = 0;
+
 struct int_register {
 	bool ready;
 	int tag;
@@ -25,17 +28,17 @@ struct cdb {
 
 struct reservation_station {
 	int fu_type;
-	int dest_reg_num;
+	int dest_reg_index;  /* index into reg_file */
 	int dest_reg_tag;
-	struct int_register *src[SRC_REGISTER_COUNT];
+	struct int_register src[SRC_REGISTER_COUNT];
 };
 
 struct instruction {
+	int id;
 	void *addr;
 	int fu_type;
 	int dest_reg_num;
-	int src1_reg_num;
-	int src2_reg_num;
+	int src_reg_num[SRC_REGISTER_COUNT];
 };
 
 enum FU_TYPES {
@@ -70,23 +73,60 @@ static void instruction_fetch(FILE *trace_file, int fetch_rate,
 		struct instruction *inst = emalloc(sizeof(*inst));
 		int n = fscanf(trace_file, "%p %d %d %d %d\n", &inst->addr,
 			       &inst->fu_type, &inst->dest_reg_num,
-			       &inst->src1_reg_num, &inst->src2_reg_num);
+			       &inst->src_reg_num[0], &inst->src_reg_num[1]);
 		if (n < 5)
 			fail("Invalid instruction read\n");
-		vlog("Adding instruction %p %1d %2d %2d %2d to dispatch queue.\n",
-		     inst->addr, inst->fu_type, inst->dest_reg_num,
-		     inst->src1_reg_num, inst->src2_reg_num);
+		inst->id = instruction_count++;
+		vlog("Adding instruction %d (%p %1d %2d %2d %2d) to dispatch queue.\n",
+		     inst->id, inst->addr, inst->fu_type, inst->dest_reg_num,
+		     inst->src_reg_num[0], inst->src_reg_num[1]);
 		deque_append(dispatch_queue, inst);
 	}
 }
 
+/* alloc's and initializes a reservation station for the given instruction.
+ * Destroy with free() */
+static struct reservation_station *
+reservation_station_create(struct instruction *i)
+{
+	struct reservation_station *rs = ecalloc(sizeof(*rs));
+	rs->fu_type = i->fu_type;
+	rs->dest_reg_index = i->dest_reg_num;
+	return rs;
+}
+
+/* dispatch logic for a single instruction */
+static struct reservation_station *
+dispatch_inst(struct instruction *inst, struct int_register reg_file[])
+{
+	struct reservation_station *rs = reservation_station_create(inst);
+	for (int i = 0; i < SRC_REGISTER_COUNT; ++i) {
+		int reg_index = inst->src_reg_num[i];
+		if (reg_file[i].ready) {
+			rs->src[i].val = reg_file[reg_index].val;
+			rs->src[i].ready = true;
+		} else {
+			rs->src[i].tag = reg_file[reg_index].tag;
+			rs->src[i].ready = false;
+		}
+	}
+	int tag = inst->id;
+	rs->dest_reg_tag = tag;
+	reg_file[inst->dest_reg_num].tag = tag;
+	reg_file[inst->dest_reg_num].ready = false;
+	return rs;
+}
+
 /* Dispatches instructions to the scheduler */
-static void dispatch(deque_t *dispatch_queue, deque_t *sched_queue)
+static void dispatch(deque_t *dispatch_queue, struct int_register reg_file[],
+		     deque_t *sched_queue)
 {
 	while (!deque_is_empty(dispatch_queue)) {
-		struct instruction *i = deque_delete_first(dispatch_queue);
-		struct reservation_station *rs;
-		free(i);
+		struct instruction *inst = deque_delete_first(dispatch_queue);
+		vlog("Dispatching");
+		struct reservation_station *rs = dispatch_inst(inst, reg_file);
+		deque_append(sched_queue, rs);
+		free(inst);
 	}
 }
 
@@ -129,7 +169,7 @@ void tomasulo_sim(struct options *opt)
 		/* state_update(); */
 		/* execute(); */
 		/* schedule(); */
-		dispatch(dispatch_queue, sched_queue);
+		dispatch(dispatch_queue, reg_file, sched_queue);
 		instruction_fetch(opt->trace_file, opt->fetch_rate,
 				  dispatch_queue);
 		clock++;

@@ -19,4 +19,11 @@ static inline void *emalloc(size_t size)
 	return p;
 }
 
+static inline void *ecalloc(size_t size)
+{
+	void *p = calloc(1, size);
+	if (!p)
+		fail("Memory error");
+	return p;
+}
 #endif /* end of include guard: COMMON_H_ */
