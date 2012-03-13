@@ -114,15 +114,17 @@ deque_node_t *deque_node_remove(deque_t *deque, deque_node_t *node)
 	return node;
 }
 
-void deque_node_destroy(deque_node_t *node)
+void *deque_node_destroy(deque_node_t *node)
 {
+	void *data = node->data;
 	free(node);
+	return data;
 }
 
-void deque_node_delete(deque_t *d, deque_node_t *n)
+void *deque_node_delete(deque_t *d, deque_node_t *n)
 {
 	deque_node_remove(d, n);
-	deque_node_destroy(n);
+	return deque_node_destroy(n);
 }
 
 void deque_destroy(deque_t *d)

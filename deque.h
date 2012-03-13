@@ -64,13 +64,14 @@ void deque_foreach(deque_t *d, deque_func user_func, void *user_data);
 /* Destroys all nodes used by deque and the deque itself */
 void deque_destroy(deque_t *deque);
 
-/* Removes node from deque and destroys the node */
-void deque_node_delete(deque_t *deque, deque_node_t *node);
+/* Removes node from deque, destroys the node, and returns the data it points
+ * to */
+void *deque_node_delete(deque_t *deque, deque_node_t *node);
 
 /* Removes from deque and returns it */
 deque_node_t *deque_node_remove(deque_t *deque, deque_node_t *node);
 
-/* Frees any memory used by node */
-void deque_node_destroy(deque_node_t *node);
+/* Frees any memory used by node and returns the data it points to */
+void *deque_node_destroy(deque_node_t *node);
 
 #endif /* end of include guard: DEQUE_H_ */
