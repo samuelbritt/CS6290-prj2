@@ -70,6 +70,8 @@ void *deque_node_delete(deque_t *deque, deque_node_t *node);
 
 /* Removes from deque and returns it */
 deque_node_t *deque_node_remove(deque_t *deque, deque_node_t *node);
+deque_node_t *deque_node_remove_first(deque_t *deque);
+deque_node_t *deque_node_remove_last(deque_t *deque);
 
 /* Frees any memory used by node and returns the data it points to */
 void *deque_node_destroy(deque_node_t *node);

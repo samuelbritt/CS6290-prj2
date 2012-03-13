@@ -82,12 +82,13 @@ static void instruction_fetch(FILE *trace_file, int fetch_rate,
 	}
 }
 
-/* Dispatches instrcutions to the scheduler */
-static void dispatch(deque_t *dispatch_queue)
+/* Dispatches instructions to the scheduler */
+static void dispatch(deque_t *dispatch_queue, deque_t *sched_queue)
 {
 	while (!deque_is_empty(dispatch_queue)) {
 		struct instruction *i = deque_node_delete(dispatch_queue,
 							  deque_first(dispatch_queue));
+		struct reservation_station *rs;
 		free(i);
 	}
 }
@@ -131,7 +132,7 @@ void tomasulo_sim(struct options *opt)
 		/* state_update(); */
 		/* execute(); */
 		/* schedule(); */
-		dispatch(dispatch_queue);
+		dispatch(dispatch_queue, sched_queue);
 		instruction_fetch(opt->trace_file, opt->fetch_rate,
 				  dispatch_queue);
 		clock++;

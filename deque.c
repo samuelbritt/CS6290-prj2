@@ -114,6 +114,16 @@ deque_node_t *deque_node_remove(deque_t *deque, deque_node_t *node)
 	return node;
 }
 
+deque_node_t *deque_node_remove_first(deque_t *deque)
+{
+	return deque_node_remove(deque, deque_first(deque));
+}
+
+deque_node_t *deque_node_remove_last(deque_t *deque)
+{
+	return deque_node_remove(deque, deque_last(deque));
+}
+
 void *deque_node_destroy(deque_node_t *node)
 {
 	void *data = node->data;
