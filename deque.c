@@ -18,6 +18,15 @@ struct deque {
 	struct deque_node *tail;
 };
 
+static deque_node_t *deque_node_create(void *data)
+{
+	deque_node_t *n = emalloc(sizeof(*n));
+	n->data = data;
+	n->prev = NULL;
+	n->next = NULL;
+	return n;
+}
+
 deque_t *deque_create()
 {
 	deque_t *dq = emalloc(sizeof(*dq));
@@ -26,15 +35,6 @@ deque_t *deque_create()
 	dq->head->next = dq->tail;
 	dq->tail->prev = dq->head;
 	return dq;
-}
-
-deque_node_t *deque_node_create(void *data)
-{
-	deque_node_t *n = emalloc(sizeof(*n));
-	n->data = data;
-	n->prev = NULL;
-	n->next = NULL;
-	return n;
 }
 
 deque_node_t *deque_first(deque_t *deque)
@@ -75,7 +75,8 @@ void deque_foreach(deque_t *d, deque_func user_func, void *user_data)
 	}
 }
 
-deque_node_t *deque_insert_before(deque_node_t *sibling, deque_node_t *new_node)
+static deque_node_t *deque_insert_before(deque_node_t *sibling,
+					 deque_node_t *new_node)
 {
 	new_node->next = sibling;
 	new_node->prev = sibling->prev;
@@ -85,7 +86,8 @@ deque_node_t *deque_insert_before(deque_node_t *sibling, deque_node_t *new_node)
 }
 
 
-deque_node_t *deque_insert_after(deque_node_t *sibling, deque_node_t *new_node)
+static deque_node_t *deque_insert_after(deque_node_t *sibling,
+					deque_node_t *new_node)
 {
 	new_node->next = sibling->next;
 	new_node->prev = sibling;
@@ -94,18 +96,21 @@ deque_node_t *deque_insert_after(deque_node_t *sibling, deque_node_t *new_node)
 	return new_node;
 }
 
-deque_node_t *deque_prepend(deque_t *deque, deque_node_t *node)
+deque_node_t *deque_prepend(deque_t *deque, void *data)
 {
+	deque_node_t *node = deque_node_create(data);
 	return deque_insert_after(deque->head, node);
 }
 
 
-deque_node_t *deque_append(deque_t *deque, deque_node_t *node)
+deque_node_t *deque_append(deque_t *deque, void *data)
 {
+	deque_node_t *node = deque_node_create(data);
 	return deque_insert_before(deque->tail, node);
 }
 
-deque_node_t *deque_node_remove(deque_t *deque, deque_node_t *node)
+/* Remove node from list without destroying the node */
+static deque_node_t *deque_remove_node(deque_t *deque, deque_node_t *node)
 {
 	node->prev->next = node->next;
 	node->next->prev = node->prev;
@@ -114,34 +119,34 @@ deque_node_t *deque_node_remove(deque_t *deque, deque_node_t *node)
 	return node;
 }
 
-deque_node_t *deque_node_remove_first(deque_t *deque)
-{
-	return deque_node_remove(deque, deque_first(deque));
-}
-
-deque_node_t *deque_node_remove_last(deque_t *deque)
-{
-	return deque_node_remove(deque, deque_last(deque));
-}
-
-void *deque_node_destroy(deque_node_t *node)
+/* Destroy the node and return the data it pointed to */
+static void *deque_destroy_node(deque_node_t *node)
 {
 	void *data = node->data;
 	free(node);
 	return data;
 }
 
-void *deque_node_delete(deque_t *d, deque_node_t *n)
+void *deque_delete_node(deque_t *d, deque_node_t *n)
 {
-	deque_node_remove(d, n);
-	return deque_node_destroy(n);
+	deque_remove_node(d, n);
+	return deque_destroy_node(n);
+}
+
+void *deque_delete_first(deque_t *d)
+{
+	return deque_delete_node(d, deque_first(d));
+}
+void *deque_delete_last(deque_t *d)
+{
+	return deque_delete_node(d, deque_last(d));
 }
 
 void deque_destroy(deque_t *d)
 {
 	while (!deque_is_empty(d))
-		deque_node_delete(d, deque_first(d));
-	deque_node_destroy(d->head);
-	deque_node_destroy(d->tail);
+		deque_delete_first(d);
+	deque_destroy_node(d->head);
+	deque_destroy_node(d->tail);
 	free(d);
 }

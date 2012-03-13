@@ -65,7 +65,6 @@ static void vlog(const char *format, ...)
 static void instruction_fetch(FILE *trace_file, int fetch_rate,
 			      deque_t *dispatch_queue)
 {
-	deque_node_t *node;
 	int instructions_fetched = 0;
 	while ((instructions_fetched++ < fetch_rate) && !feof(trace_file)) {
 		struct instruction *inst = emalloc(sizeof(*inst));
@@ -77,8 +76,7 @@ static void instruction_fetch(FILE *trace_file, int fetch_rate,
 		vlog("Adding instruction %p %1d %2d %2d %2d to dispatch queue.\n",
 		     inst->addr, inst->fu_type, inst->dest_reg_num,
 		     inst->src1_reg_num, inst->src2_reg_num);
-		node = deque_node_create(inst);
-		deque_append(dispatch_queue, node);
+		deque_append(dispatch_queue, inst);
 	}
 }
 
@@ -86,8 +84,7 @@ static void instruction_fetch(FILE *trace_file, int fetch_rate,
 static void dispatch(deque_t *dispatch_queue, deque_t *sched_queue)
 {
 	while (!deque_is_empty(dispatch_queue)) {
-		struct instruction *i = deque_node_delete(dispatch_queue,
-							  deque_first(dispatch_queue));
+		struct instruction *i = deque_delete_first(dispatch_queue);
 		struct reservation_station *rs;
 		free(i);
 	}
