@@ -16,7 +16,7 @@ static void print_usage(FILE *fp, char *program_name)
 		"\n"
 		"USAGE:   %s --help\n"
 		"         %s [-v] <fetch-rate> <k0> <k1> <k2> <cdb-count> <trace_file>\n"
-		"         %s [-v] [-n <fetch-rate>] [--k0=<count>] [--k1=<count>] [--k2=<count>] [-c <count>] <trace_file>\n",
+		"         %s [OPTIONS] <trace_file>\n",
 		program_name, program_name, program_name);
 	fprintf(fp,
 		"OPTIONS:\n"
