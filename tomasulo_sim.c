@@ -220,10 +220,14 @@ schedule(deque_t *sched_queue, struct cdb *cdbs, int cdb_count,
 
 /* Executes an instruction */
 static void
-execute(deque_t *exe_queue)
+execute(deque_t *exe_queue, deque_t *sched_queue)
 {
-	while (!deque_is_empty(exe_queue))
-		free(deque_delete_first(exe_queue));
+	while (!deque_is_empty(exe_queue)) {
+		struct reservation_station *rs = deque_delete_first(exe_queue);
+		deque_delete(sched_queue, rs);
+		free(rs);
+	}
+
 }
 
 /* Writes results */
@@ -245,7 +249,11 @@ void
 tomasulo_sim(const struct options * const opt)
 {
 	struct int_register reg_file[ARCH_REGISTER_COUNT];
-	memset(reg_file, 0, sizeof(reg_file));
+	for (int i = 0; i < ARCH_REGISTER_COUNT; ++i) {
+		reg_file[i].ready = true;
+		reg_file[i].tag = 0;
+		reg_file[i].val = i;
+	}
 
 	struct cdb cdbs[opt->cdb_count];
 	memset(cdbs, 0, sizeof(cdbs));
@@ -272,14 +280,14 @@ tomasulo_sim(const struct options * const opt)
 	int clock = 0;
 	do {
 		/* state_update(); */
-		execute(exe_queue);
+		execute(exe_queue, sched_queue);
 		schedule(sched_queue, cdbs, opt->cdb_count, exe_queue);
 		dispatch(dispatch_queue, reg_file, sched_queue);
 		instruction_fetch(opt->trace_file, opt->fetch_rate,
 				  dispatch_queue);
 		clock++;
 	} while (!deque_is_empty(dispatch_queue) ||
-		 /* !deque_is_empty(sched_queue) || */
+		 !deque_is_empty(sched_queue) ||
 		 !deque_is_empty(exe_queue) ||
 		 0
 		 );
