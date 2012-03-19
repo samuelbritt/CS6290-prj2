@@ -88,7 +88,7 @@ void test_deque_prepend(CuTest *tc)
 	deque_destroy(d);
 }
 
-void test_delete(CuTest *tc)
+void test_delete_node(CuTest *tc)
 {
 	deque_t *d = deque_create();
 	int node_count = 3;
@@ -111,6 +111,35 @@ void test_delete(CuTest *tc)
 	CuAssertPtrEquals(tc, nodes[0], deque_last(d));
 
 	int *v0 = deque_delete_node(d, nodes[0]);
+	CuAssertPtrEquals(tc, &vals[0], v0);
+	CuAssertTrue(tc, deque_is_empty(d));
+
+	deque_destroy(d);
+}
+
+void test_delete(CuTest *tc)
+{
+	deque_t *d = deque_create();
+	int node_count = 3;
+	deque_node_t *nodes[node_count];
+	int vals[node_count];
+	for (int i = 0; i < node_count; ++i) {
+		vals[i] = i;
+		nodes[i] = deque_append(d, &vals[i]);
+	}
+
+	int *v1 = deque_delete(d, &vals[1]);
+	CuAssertPtrEquals(tc, &vals[1], v1);
+	CuAssertPtrEquals(tc, nodes[0], deque_first(d));
+	CuAssertPtrEquals(tc, nodes[2], deque_next(nodes[0]));
+	CuAssertPtrEquals(tc, nodes[2], deque_last(d));
+
+	int *v2 = deque_delete(d, &vals[2]);
+	CuAssertPtrEquals(tc, &vals[2], v2);
+	CuAssertPtrEquals(tc, nodes[0], deque_first(d));
+	CuAssertPtrEquals(tc, nodes[0], deque_last(d));
+
+	int *v0 = deque_delete(d, &vals[0]);
 	CuAssertPtrEquals(tc, &vals[0], v0);
 	CuAssertTrue(tc, deque_is_empty(d));
 
@@ -232,6 +261,7 @@ CuSuite* test_deque_get_suite()
 	SUITE_ADD_TEST(suite, test_deque_prepend);
 	SUITE_ADD_TEST(suite, test_foreach);
 	SUITE_ADD_TEST(suite, test_delete);
+	SUITE_ADD_TEST(suite, test_delete_node);
 	SUITE_ADD_TEST(suite, test_delete_first);
 	SUITE_ADD_TEST(suite, test_delete_last);
 

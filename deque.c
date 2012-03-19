@@ -148,13 +148,34 @@ deque_delete_node(deque_t *d, deque_node_t *n)
 }
 
 void *
+deque_delete(deque_t *d, void *data)
+{
+	if (deque_is_empty(d))
+		return NULL;
+
+	deque_node_t *p = deque_first(d);
+	while (p != d->tail) {
+		if (p->data == data)
+			return deque_delete_node(d, p);
+		p = deque_next(p);
+	}
+	return NULL;
+}
+
+void *
 deque_delete_first(deque_t *d)
 {
+	if (deque_is_empty(d))
+		return NULL;
+
 	return deque_delete_node(d, deque_first(d));
 }
 void *
 deque_delete_last(deque_t *d)
 {
+	if (deque_is_empty(d))
+		return NULL;
+
 	return deque_delete_node(d, deque_last(d));
 }
 

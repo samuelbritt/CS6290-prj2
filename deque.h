@@ -60,6 +60,10 @@ void deque_foreach(deque_t *d, deque_func user_func, void *user_data);
 /* Remove a node from deque and returns the data it points to */
 void *deque_delete_node(deque_t *deque, deque_node_t *node);
 
+/* Remove the node containing the given data and returns the data it points
+ * to */
+void *deque_delete(deque_t *deque, void *data);
+
 /* Remove the first, last node from deque and returns the data it points to */
 void *deque_delete_first(deque_t *deque);
 void *deque_delete_last(deque_t *deque);
