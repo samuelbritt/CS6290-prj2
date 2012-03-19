@@ -10,7 +10,8 @@
 extern int verbose;
 
 /* Prints usage information. Does not exit */
-static void print_usage(FILE *fp, char *program_name)
+static void
+print_usage(FILE *fp, char *program_name)
 {
 	fprintf(fp,
 		"\n"
@@ -39,8 +40,8 @@ static void print_usage(FILE *fp, char *program_name)
  * in-between: either all arguments have to be positional, or none of them can
  * be. If the positional form is used, any additional optional arguments will be
  * overridden. */
-static void process_args(int argc, char *const argv[],
-			 struct options *opt)
+static void
+process_args(int argc, char *const argv[], struct options *opt)
 {
 	char *arg0 = strdup(argv[0]);
 	char *program_name = basename(arg0);

@@ -55,7 +55,8 @@ struct func_unit {
 };
 
 /* Logs to stdout if `verbose` is set */
-static void vlog(const char *format, ...)
+static void
+vlog(const char *format, ...)
 {
 	if (!verbose)
 		return;
@@ -66,8 +67,8 @@ static void vlog(const char *format, ...)
 }
 
 /* Fetches `fetch_rate` instructions and puts them in the dispatch queue */
-static void instruction_fetch(FILE *trace_file, int fetch_rate,
-			      deque_t *dispatch_queue)
+static void
+instruction_fetch(FILE *trace_file, int fetch_rate, deque_t *dispatch_queue)
 {
 	int instructions_fetched = 0;
 	while ((instructions_fetched++ < fetch_rate) && !feof(trace_file)) {
@@ -87,8 +88,8 @@ static void instruction_fetch(FILE *trace_file, int fetch_rate,
 
 /* Inits a reservation station source slot given the state of the corresponding
  * register in the reg_file */
-static void rs_src_init(struct int_register *rs_src,
-			struct int_register *reg_file_reg)
+static void
+rs_src_init(struct int_register *rs_src, struct int_register *reg_file_reg)
 {
 	if (reg_file_reg->ready) {
 		rs_src->val = reg_file_reg->val;
@@ -137,8 +138,9 @@ dispatch_inst(struct instruction *inst, struct int_register reg_file[])
 }
 
 /* Dispatches instructions to the scheduler */
-static void dispatch(deque_t *dispatch_queue, struct int_register reg_file[],
-		     deque_t *sched_queue)
+static void
+dispatch(deque_t *dispatch_queue, struct int_register reg_file[],
+	 deque_t *sched_queue)
 {
 	struct instruction *inst;
 	struct reservation_station *rs;
@@ -151,7 +153,8 @@ static void dispatch(deque_t *dispatch_queue, struct int_register reg_file[],
 }
 
 /* pulls data from cdb into reg if tags match */
-static void pull_if_tags_match(struct int_register *src, struct cdb *cdb)
+static void
+pull_if_tags_match(struct int_register *src, struct cdb *cdb)
 {
 	if (cdb->tag == src->tag) {
 		vlog("Pulling register %d from cdb\n", src->tag);
@@ -161,8 +164,8 @@ static void pull_if_tags_match(struct int_register *src, struct cdb *cdb)
 }
 
 /* Compares reg to all cdbs, and pulls the data in the tags match */
-static void pull_matching_tag(struct int_register *src, struct cdb *cdbs,
-			      int cdb_count)
+static void
+pull_matching_tag(struct int_register *src, struct cdb *cdbs, int cdb_count)
 {
 	struct cdb *cdb;
 	for (int i = 0; i < cdb_count; ++i) {
@@ -180,7 +183,8 @@ struct sched_inst_arg {
 
 /* schedule logic for a single reservation station. Designed to be called
  * from deque_foreach() */
-static void schedule_inst(void *rs_, void *sched_arg_)
+static void
+schedule_inst(void *rs_, void *sched_arg_)
 {
 	struct reservation_station *rs = rs_;
 	struct sched_inst_arg *arg = sched_arg_;
@@ -203,8 +207,9 @@ static void schedule_inst(void *rs_, void *sched_arg_)
 }
 
 /* Schedules instructions to be run */
-static void schedule(deque_t *sched_queue, struct cdb *cdbs, int cdb_count,
-		     deque_t *exe_queue)
+static void
+schedule(deque_t *sched_queue, struct cdb *cdbs, int cdb_count,
+	 deque_t *exe_queue)
 {
 	struct sched_inst_arg arg;
 	arg.cdb_count = cdb_count;
@@ -214,26 +219,30 @@ static void schedule(deque_t *sched_queue, struct cdb *cdbs, int cdb_count,
 }
 
 /* Executes an instruction */
-static void execute(deque_t *exe_queue)
+static void
+execute(deque_t *exe_queue)
 {
 	while (!deque_is_empty(exe_queue))
 		free(deque_delete_first(exe_queue));
 }
 
 /* Writes results */
-static void state_update()
+static void
+state_update()
 {
 	exit(1);	/* TODO */
 }
 
 /* wraps free() so you can pass into deque_foreach() */
-static void free_wrap(void *data, void *null)
+static void
+free_wrap(void *data, void *null)
 {
 	free(data);
 }
 
 /* Runs the actual tomasulo pipeline*/
-void tomasulo_sim(const struct options * const opt)
+void
+tomasulo_sim(const struct options * const opt)
 {
 	struct int_register reg_file[ARCH_REGISTER_COUNT];
 	memset(reg_file, 0, sizeof(reg_file));
