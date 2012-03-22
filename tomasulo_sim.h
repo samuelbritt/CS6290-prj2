@@ -1,12 +1,6 @@
 #ifndef TOMASULO_SIM_H_
 #define TOMASULO_SIM_H_
 
-/* Max number of source registers for any instruction */
-#define SRC_REGISTER_COUNT 2
-
-/* Number of architectural registers */
-#define ARCH_REGISTER_COUNT 128
-
 /* Number of instructions to fetch each cycle */
 #define DEFAULT_FETCH_RATE 1
 

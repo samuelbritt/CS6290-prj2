@@ -5,6 +5,9 @@
 #ifndef COMMON_H_
 #define COMMON_H_
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #define fail(msg) do {			\
 	fprintf(stderr, "%s\n", (msg));	\
 	exit(EXIT_FAILURE);		\
@@ -26,4 +29,35 @@ static inline void *ecalloc(size_t size)
 		fail("Memory error");
 	return p;
 }
+
+/* Defines and Data structures used by several modules */
+
+/* Max number of source registers for any instruction */
+#define SRC_REGISTER_COUNT 2
+
+/* Number of architectural registers */
+#define ARCH_REGISTER_COUNT 128
+
+/* Integer register */
+struct int_register {
+	bool ready;
+	int tag;
+	int val;
+};
+
+/* Common data bus */
+struct cdb {
+	int tag;
+	int val;
+	int reg_num;
+	bool busy;
+};
+
+struct reservation_station {
+	int fu_type;
+	int dest_reg_index;  /* index into reg_file */
+	int dest_reg_tag;
+	struct int_register src[SRC_REGISTER_COUNT];
+};
+
 #endif /* end of include guard: COMMON_H_ */

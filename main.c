@@ -6,8 +6,7 @@
 #include <string.h>
 
 #include "tomasulo_sim.h"
-
-extern int verbose;
+#include "logger.h"
 
 /* Prints usage information. Does not exit */
 static void
@@ -81,7 +80,7 @@ process_args(int argc, char *const argv[], struct options *opt)
 				opt->fetch_rate = atoi(optarg);
 				break;
 			case 'v':
-				verbose = true;
+				VERBOSE = true;
 				break;
 			case 0:
 				/* flags set by getopt_long() */
@@ -132,18 +131,16 @@ process_args(int argc, char *const argv[], struct options *opt)
 		exit(EXIT_FAILURE);
 	}
 
-	if (verbose) {
-		printf("Running in verbose mode\n");
-		printf("Provided options:\n"
-		       "    trace-file: %s\n"
-		       "    fetch-rate: %d\n"
-		       "    cdb-count:  %d\n"
-		       "    k0:         %d\n"
-		       "    k1:         %d\n"
-		       "    k2:         %d\n",
-		       trace_file_path, opt->fetch_rate, opt->cdb_count,
-		       opt->fu0_count, opt->fu1_count, opt->fu2_count);
-	}
+	vlog("Running in verbose mode\n"
+	     "Provided options:\n"
+	     "    trace-file: %s\n"
+	     "    fetch-rate: %d\n"
+	     "    cdb-count:  %d\n"
+	     "    k0:         %d\n"
+	     "    k1:         %d\n"
+	     "    k2:         %d\n",
+	     trace_file_path, opt->fetch_rate, opt->cdb_count, opt->fu0_count,
+	     opt->fu1_count, opt->fu2_count);
 	free(arg0);
 }
 
