@@ -3,7 +3,7 @@
 export ROOT = $(shell pwd)
 
 include Rules.mk
-include sources.mk
+SIM_SRCS = $(wildcard *.c)
 
 BINDIR	= .
 TESTDIR	= tests
