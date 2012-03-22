@@ -49,9 +49,17 @@ enum FU_TYPES {
 	FU_TYPE_COUNT
 };
 
+int fu_latencies[] = { 1, 2, 3 };
+
 struct func_unit {
 	bool busy;
 	int latency;
+	struct reservation_station **pipeline;
+};
+
+struct fu_set {
+	int count;
+	struct func_unit *fus;
 };
 
 /* Logs to stdout if `verbose` is set */
@@ -64,6 +72,30 @@ vlog(const char *format, ...)
 	va_start(arglist, format);
 	vprintf(format, arglist);
 	va_end(arglist);
+}
+
+/* Creates and returns an array of FUs. The return val can be freed with
+ * free() */
+static struct fu_set *
+create_fu_set(int fu_type, int fu_count)
+{
+	struct reservation_station **rs_arr;
+	struct func_unit *fus;
+	int latency = fu_latencies[fu_type];
+
+	 /* Allocate one big chunk of memory and divide it */
+	struct fu_set *set = emalloc(sizeof(*set) +
+				     fu_count * (sizeof(*fus) +
+						 latency * sizeof(*rs_arr)));
+	set->count = fu_count;
+	fus = (struct func_unit *) (set + 1);
+	rs_arr = (struct reservation_station **) (fus + fu_count);
+	for (int i = 0; i < fu_count; ++i) {
+		fus[i].pipeline = rs_arr + i * latency;
+		fus[i].latency = latency;
+		fus[i].busy = 0;
+	}
+	return set;
 }
 
 /* Fetches `fetch_rate` instructions and puts them in the dispatch queue */
@@ -261,17 +293,10 @@ tomasulo_sim(const struct options * const opt)
 		cdbs[i].tag = -1;
 	}
 
-	struct func_unit fu0[opt->fu0_count];
-	memset(fu0, 0, sizeof(fu0));
-	struct func_unit fu1[opt->fu1_count];
-	memset(fu1, 0, sizeof(fu1));
-	struct func_unit fu2[opt->fu2_count];
-	memset(fu2, 0, sizeof(fu2));
-
-	struct func_unit *fus[] = {fu0, fu1, fu2};
-	/* TODO set latencies. Set each fu type individually? Have a table
-	 * that maps fu type to latency? Have separate structs for each fu
-	 * type? */
+	struct fu_set *fu0 = create_fu_set(FU0, opt->fu0_count);
+	struct fu_set *fu1 = create_fu_set(FU1, opt->fu1_count);
+	struct fu_set *fu2 = create_fu_set(FU2, opt->fu2_count);
+	struct fu_set *fus[] = {fu0, fu1, fu2};
 
 	deque_t *dispatch_queue = deque_create();
 	deque_t *sched_queue = deque_create();
