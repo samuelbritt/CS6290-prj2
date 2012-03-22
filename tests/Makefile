@@ -3,7 +3,7 @@ CFLAGS += -g -O0
 
 TGT = tests
 
-INCDIRS = ..
+INCDIRS = ../src
 
 INCLUDES = $(INCDIRS:%=-I%)
 

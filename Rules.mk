@@ -8,5 +8,4 @@ DBFLAGS = -g -O0 -DDEBUG
 
 # Generic rules:
 LINK	= $(LINK.c) -o $@ $^ $(LDLIBS)
-COMP	= $(COMPILE.c) $(INCLUDES) -MMD -MP $<
-
+COMP	= $(COMPILE.c) $(INCLUDES) -MMD -MP $< -o $@
