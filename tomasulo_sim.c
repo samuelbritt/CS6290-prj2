@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "tomasulo_sim.h"
+#include "execute.h"
 #include "common.h"
 #include "deque.h"
 
@@ -42,26 +43,6 @@ struct instruction {
 	int src_reg_num[SRC_REGISTER_COUNT];
 };
 
-enum FU_TYPES {
-	FU0,
-	FU1,
-	FU2,
-	FU_TYPE_COUNT
-};
-
-int fu_latencies[] = { 1, 2, 3 };
-
-struct func_unit {
-	bool busy;
-	int latency;
-	struct reservation_station **pipeline;
-};
-
-struct fu_set {
-	int count;
-	struct func_unit *fus;
-};
-
 /* Logs to stdout if `verbose` is set */
 static void
 vlog(const char *format, ...)
@@ -72,30 +53,6 @@ vlog(const char *format, ...)
 	va_start(arglist, format);
 	vprintf(format, arglist);
 	va_end(arglist);
-}
-
-/* Creates and returns an array of FUs. The return val can be freed with
- * free() */
-static struct fu_set *
-create_fu_set(int fu_type, int fu_count)
-{
-	struct reservation_station **rs_arr;
-	struct func_unit *fus;
-	int latency = fu_latencies[fu_type];
-
-	 /* Allocate one big chunk of memory and divide it */
-	struct fu_set *set = emalloc(sizeof(*set) +
-				     fu_count * (sizeof(*fus) +
-						 latency * sizeof(*rs_arr)));
-	set->count = fu_count;
-	fus = (struct func_unit *) (set + 1);
-	rs_arr = (struct reservation_station **) (fus + fu_count);
-	for (int i = 0; i < fu_count; ++i) {
-		fus[i].pipeline = rs_arr + i * latency;
-		fus[i].latency = latency;
-		fus[i].busy = 0;
-	}
-	return set;
 }
 
 /* Fetches `fetch_rate` instructions and puts them in the dispatch queue */
@@ -241,7 +198,7 @@ schedule_inst(void *rs_, void *sched_arg_)
 /* Schedules instructions to be run */
 static void
 schedule(deque_t *sched_queue, struct cdb *cdbs, int cdb_count,
-	 deque_t *exe_queue)
+	 struct fu_set *fus[], deque_t *exe_queue)
 {
 	struct sched_inst_arg arg;
 	arg.cdb_count = cdb_count;
@@ -250,30 +207,12 @@ schedule(deque_t *sched_queue, struct cdb *cdbs, int cdb_count,
 	deque_foreach(sched_queue, &schedule_inst, &arg);
 }
 
-/* Executes an instruction */
-static void
-execute(deque_t *exe_queue, deque_t *sched_queue)
-{
-	while (!deque_is_empty(exe_queue)) {
-		struct reservation_station *rs = deque_delete_first(exe_queue);
-		deque_delete(sched_queue, rs);
-		free(rs);
-	}
-
-}
 
 /* Writes results */
 static void
 state_update()
 {
 	exit(1);	/* TODO */
-}
-
-/* wraps free() so you can pass into deque_foreach() */
-static void
-free_wrap(void *data, void *null)
-{
-	free(data);
 }
 
 /* Runs the actual tomasulo pipeline*/
@@ -305,8 +244,8 @@ tomasulo_sim(const struct options * const opt)
 	int clock = 0;
 	do {
 		/* state_update(); */
-		execute(exe_queue, sched_queue);
-		schedule(sched_queue, cdbs, opt->cdb_count, exe_queue);
+		execute(exe_queue, sched_queue, fus);
+		schedule(sched_queue, cdbs, opt->cdb_count, fus, exe_queue);
 		dispatch(dispatch_queue, reg_file, sched_queue);
 		instruction_fetch(opt->trace_file, opt->fetch_rate,
 				  dispatch_queue);
