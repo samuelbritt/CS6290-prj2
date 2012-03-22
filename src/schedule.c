@@ -19,30 +19,21 @@ pull_if_tags_match(struct int_register *src, struct cdb *cdb)
 
 /* Compares reg to all cdbs, and pulls the data in the tags match */
 static void
-pull_matching_tag(struct int_register *src, struct cdb *cdbs, int cdb_count)
+pull_matching_tag(struct int_register *src)
 {
 	struct cdb *cdb;
-	for (int i = 0; i < cdb_count; ++i) {
-		cdb = &cdbs[i];
+	for (int i = 0; i < CDB_SET.count; ++i) {
+		cdb = &CDB_SET.cdbs[i];
 		pull_if_tags_match(src, cdb);
 	}
 }
 
-/* wrapper argument for schedule_inst() */
-struct sched_inst_arg {
-	int cdb_count;
-	struct cdb *cdbs;
-};
-
 /* schedule logic for a single reservation station. Designed to be called
  * from deque_foreach() */
 static void
-schedule_inst(void *rs_, void *sched_arg_)
+schedule_inst(void *rs_, void *arg)
 {
 	struct reservation_station *rs = rs_;
-	struct sched_inst_arg *arg = sched_arg_;
-	int cdb_count = arg->cdb_count;
-	struct cdb *cdbs = arg->cdbs;
 
 	if (rs->fired)
 		return;
@@ -51,7 +42,7 @@ schedule_inst(void *rs_, void *sched_arg_)
 	bool all_sources_ready = true;
 	for (int i = 0; i < SRC_REGISTER_COUNT; ++i) {
 		src = &rs->src[i];
-		pull_matching_tag(src, cdbs, cdb_count);
+		pull_matching_tag(src);
 		all_sources_ready = all_sources_ready && src->ready;
 	}
 	if (all_sources_ready && !issue_instruction(rs)) {
@@ -93,11 +84,8 @@ sched_destroy()
 
 /* Schedules instructions to be run */
 void
-schedule(struct cdb *cdbs, int cdb_count)
+schedule()
 {
-	struct sched_inst_arg arg;
-	arg.cdb_count = cdb_count;
-	arg.cdbs = cdbs;
-	deque_foreach(sched_queue, &schedule_inst, &arg);
+	deque_foreach(sched_queue, &schedule_inst, NULL);
 }
 

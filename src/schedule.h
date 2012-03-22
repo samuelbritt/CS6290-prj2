@@ -12,7 +12,7 @@ struct cdb;
 
 /* Schedules instructions to be run */
 void
-schedule(struct cdb *cdbs, int cdb_count);
+schedule();
 
 /* Manipulates the internal scheduling queue */
 void sched_init(); /* Must be called before any other function */

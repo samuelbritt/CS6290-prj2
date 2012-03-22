@@ -13,11 +13,30 @@
 #include "common.h"
 #include "logger.h"
 
+struct cdb_set CDB_SET;
+
 /* Writes results */
 static void
-state_update()
+state_update(struct int_register *reg_file)
 {
-	exit(1);	/* TODO */
+	struct cdb *cdb;
+	struct int_register *reg;
+	for (int i = 0; i < CDB_SET.count; ++i) {
+		cdb = &CDB_SET.cdbs[i];
+		if (cdb->reg_num < 0) {
+			cdb->busy = false;
+			continue;
+		}
+
+		if (cdb->busy) {
+			cdb->busy = false;
+			reg = &reg_file[cdb->reg_num];
+			if (cdb->tag == reg->tag) {
+				reg->val = cdb->val;
+				reg->ready = true;
+			}
+		}
+	}
 }
 
 /* Runs the actual tomasulo pipeline*/
@@ -37,6 +56,8 @@ tomasulo_sim(const struct options * const opt)
 	for (int i = 0; i < opt->cdb_count; ++i) {
 		cdbs[i].tag = -1;
 	}
+	CDB_SET.count = opt->cdb_count;
+	CDB_SET.cdbs = cdbs;
 
 	disp_init();
 	sched_init();
@@ -45,9 +66,9 @@ tomasulo_sim(const struct options * const opt)
 	int clock = 0;
 	do {
 		vlog("\n----- Cycle %d -----\n", clock);
-		/* state_update(); */
+		state_update(reg_file);
 		execute();
-		schedule(cdbs, opt->cdb_count);
+		schedule();
 		dispatch(reg_file);
 		instruction_fetch(opt->trace_file, opt->fetch_rate);
 		clock++;

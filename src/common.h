@@ -54,6 +54,13 @@ struct cdb {
 	bool busy;
 };
 
+struct cdb_set {
+	int count;
+	struct cdb *cdbs;
+};
+
+extern struct cdb_set CDB_SET;
+
 /* Instruction as read from file */
 struct instruction {
 	int id;
