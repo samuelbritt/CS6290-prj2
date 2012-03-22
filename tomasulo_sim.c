@@ -42,25 +42,24 @@ tomasulo_sim(const struct options * const opt)
 	struct fu_set *fu2 = create_fu_set(FU2, opt->fu2_count);
 	struct fu_set *fus[] = {fu0, fu1, fu2};
 
-	deque_t *dispatch_queue = deque_create();
-	deque_t *sched_queue = deque_create();
+	disp_init();
+	sched_init();
 
 	int clock = 0;
 	do {
 		vlog("\n----- Cycle %d -----\n", clock);
 		/* state_update(); */
-		execute(sched_queue, fus);
-		schedule(sched_queue, cdbs, opt->cdb_count, fus);
-		dispatch(dispatch_queue, reg_file, sched_queue);
-		instruction_fetch(opt->trace_file, opt->fetch_rate,
-				  dispatch_queue);
+		execute(fus);
+		schedule(cdbs, opt->cdb_count, fus);
+		dispatch(reg_file);
+		instruction_fetch(opt->trace_file, opt->fetch_rate);
 		clock++;
-	} while (!deque_is_empty(dispatch_queue) ||
-		 !deque_is_empty(sched_queue) ||
+	} while (!disp_queue_is_empty() ||
+		 !sched_queue_is_empty() ||
 		 0
 		 );
 	vlog("Simulation complete.\n");
 
-	deque_destroy(dispatch_queue);
-	deque_destroy(sched_queue);
+	disp_destroy();
+	sched_destroy();
 }

@@ -40,6 +40,6 @@ struct fu_set * create_fu_set(int fu_type, int fu_count);
 int issue_instruction(struct fu_set **fu_sets, struct reservation_station *rs);
 
 /* Execution pipeline stage. Updates all FUs */
-void execute(deque_t *sched_queue, struct fu_set *fus[]);
+void execute(struct fu_set *fus[]);
 
 #endif /* end of include guard: EXECUTE_H_ */

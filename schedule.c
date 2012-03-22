@@ -5,6 +5,8 @@
 #include "execute.h"
 #include "common.h"
 
+deque_t *sched_queue;
+
 /* pulls data from cdb into reg if tags match */
 static void
 pull_if_tags_match(struct int_register *src, struct cdb *cdb)
@@ -60,10 +62,40 @@ schedule_inst(void *rs_, void *sched_arg_)
 	}
 }
 
+/* Wrapper functions for deque */
+struct reservation_station *
+sched_add_rs()
+{
+	struct reservation_station *rs = ecalloc(sizeof(*rs));
+	deque_append(sched_queue, rs);
+	return rs;
+}
+void
+sched_delete_rs(struct reservation_station *rs)
+{
+	rs = deque_delete(sched_queue, rs);
+	if (rs)
+		free(rs);
+}
+bool
+sched_queue_is_empty()
+{
+	return deque_is_empty(sched_queue);
+}
+void
+sched_init()
+{
+	sched_queue = deque_create();
+}
+void
+sched_destroy()
+{
+	deque_destroy(sched_queue);
+}
+
 /* Schedules instructions to be run */
 void
-schedule(deque_t *sched_queue, struct cdb *cdbs, int cdb_count,
-	 struct fu_set *fus[])
+schedule(struct cdb *cdbs, int cdb_count, struct fu_set *fus[])
 {
 	struct sched_inst_arg arg;
 	arg.cdb_count = cdb_count;
@@ -71,3 +103,4 @@ schedule(deque_t *sched_queue, struct cdb *cdbs, int cdb_count,
 	arg.fus = fus;
 	deque_foreach(sched_queue, &schedule_inst, &arg);
 }
+

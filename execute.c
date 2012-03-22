@@ -11,6 +11,7 @@
 #include "common.h"
 
 #include "execute.h"
+#include "schedule.h"
 
 /* Maps FU_TYPE to its latency */
 int fu_latencies[] = { 1, 2, 3 };
@@ -18,7 +19,7 @@ int fu_latencies[] = { 1, 2, 3 };
 /* Broadcasts and finishes the last instruction in the FU pipeline, if
  * possible */
 static void
-execute_last_inst(struct func_unit *fu, deque_t *sched_queue)
+execute_last_inst(struct func_unit *fu)
 {
 	int latency = fu->latency;
 	struct reservation_station **last_rs = &fu->pipeline[latency - 1];
@@ -26,8 +27,7 @@ execute_last_inst(struct func_unit *fu, deque_t *sched_queue)
 	    *last_rs != NULL) {
 		/* TODO finish instruction */
 		vlog_inst((*last_rs)->dest_reg_tag, "Complete");
-		deque_delete(sched_queue, *last_rs);
-		free(*last_rs);
+		sched_delete_rs(*last_rs);
 		*last_rs = NULL;
 	}
 }
@@ -45,17 +45,17 @@ execute_update_fu_pipeline(struct func_unit *fu)
 }
 
 static void
-execute_fu(struct func_unit *fu, deque_t *sched_queue)
+execute_fu(struct func_unit *fu)
 {
-	execute_last_inst(fu, sched_queue);
+	execute_last_inst(fu);
 	execute_update_fu_pipeline(fu);
 }
 
 static void
-execute_fu_set(struct fu_set *set, deque_t *sched_queue)
+execute_fu_set(struct fu_set *set)
 {
 	for (int i = 0; i < set->count; ++i)
-		execute_fu(&set->fus[i], sched_queue);
+		execute_fu(&set->fus[i]);
 }
 
 /* Returns true if the FU is free for the next instruction */
@@ -126,9 +126,9 @@ create_fu_set(int fu_type, int fu_count)
 
 /* Execution pipeline stage. Updates all FUs */
 void
-execute(deque_t *sched_queue, struct fu_set *fus[])
+execute(struct fu_set *fus[])
 {
 	for (int i = 0; i < FU_TYPE_COUNT; ++i) {
-		execute_fu_set(fus[i], sched_queue);
+		execute_fu_set(fus[i]);
 	}
 }

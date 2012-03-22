@@ -1,8 +1,11 @@
 #include "deque.h"
 #include "logger.h"
+#include "common.h"
 
 #include "dispatch.h"
-#include "common.h"
+#include "schedule.h"
+
+deque_t *disp_queue;
 
 /* Inits a reservation station source slot given the state of the corresponding
  * register in the reg_file */
@@ -19,7 +22,7 @@ rs_src_init(struct int_register *rs_src, struct int_register *reg_file_reg)
 }
 
 /* Initializes a reservation station for the given instruction. */
-static struct reservation_station *
+static void
 reservation_station_init(struct reservation_station *rs,
 			 struct instruction *inst,
 			 struct int_register reg_file[])
@@ -37,35 +40,55 @@ reservation_station_init(struct reservation_station *rs,
 			rs->src[i].ready = true;
 		}
 	}
-	return rs;
 }
 
-/* dispatch logic for a single instruction. Returns a new
- * reservation_station. Destroy with free() */
-static struct reservation_station *
-dispatch_inst(struct instruction *inst, struct int_register reg_file[])
+/* dispatches a single instruction into the given reservation station */
+static void
+dispatch_inst(struct instruction *inst, struct int_register reg_file[],
+	      struct reservation_station *rs)
 {
 	vlog_inst(inst->id, "Dispatch");
-	struct reservation_station *rs = ecalloc(sizeof(*rs));
 	reservation_station_init(rs, inst, reg_file);
 	if (rs->dest_reg_index >= 0) {
 		reg_file[rs->dest_reg_index].tag = rs->dest_reg_tag;
 		reg_file[rs->dest_reg_index].ready = false;
 	}
-	return rs;
+}
+
+/* Wrapper functions for deque */
+struct instruction *
+disp_add_inst()
+{
+	struct instruction *inst = ecalloc(sizeof(*inst));
+	deque_append(disp_queue, inst);
+	return inst;
+}
+bool
+disp_queue_is_empty()
+{
+	return deque_is_empty(disp_queue);
+}
+void
+disp_init()
+{
+	disp_queue = deque_create();
+}
+void
+disp_destroy()
+{
+	deque_destroy(disp_queue);
 }
 
 /* Dispatches instructions to the scheduler */
 void
-dispatch(deque_t *dispatch_queue, struct int_register reg_file[],
-	 deque_t *sched_queue)
+dispatch(struct int_register reg_file[])
 {
 	struct instruction *inst;
 	struct reservation_station *rs;
-	while (!deque_is_empty(dispatch_queue)) {
-		inst = deque_delete_first(dispatch_queue);
-		rs = dispatch_inst(inst, reg_file);
-		deque_append(sched_queue, rs);
+	while (!deque_is_empty(disp_queue)) {
+		inst = deque_delete_first(disp_queue);
+		rs = sched_add_rs();
+		dispatch_inst(inst, reg_file, rs);
 		free(inst);
 	}
 }
