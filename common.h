@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #define fail(msg) do {			\
 	fprintf(stderr, "%s\n", (msg));	\
@@ -45,7 +46,6 @@ struct int_register {
 	int val;
 };
 
-
 /* Common data bus */
 struct cdb {
 	int tag;
@@ -64,6 +64,7 @@ struct instruction {
 };
 
 struct reservation_station {
+	bool fired;       /* so we don't re-schedule instructions */
 	int fu_type;
 	int dest_reg_index;  /* index into reg_file */
 	int dest_reg_tag;

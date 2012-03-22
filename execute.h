@@ -34,7 +34,12 @@ struct fu_set {
  * The return val can be freed with free() */
 struct fu_set * create_fu_set(int fu_type, int fu_count);
 
+/* Inserts the reservation station into the first pipeline stage of a free
+ * FU of the type specified by `rs`. If successful, returns 0. If no free FU is
+ * available, returns 1 */
+int issue_instruction(struct fu_set **fu_sets, struct reservation_station *rs);
+
 /* Execution pipeline stage. Updates all FUs */
-void execute(deque_t *exe_queue, deque_t *sched_queue, struct fu_set *fus[]);
+void execute(deque_t *sched_queue, struct fu_set *fus[]);
 
 #endif /* end of include guard: EXECUTE_H_ */

@@ -2,6 +2,7 @@
 #include "logger.h"
 
 #include "schedule.h"
+#include "execute.h"
 #include "common.h"
 
 /* pulls data from cdb into reg if tags match */
@@ -9,7 +10,6 @@ static void
 pull_if_tags_match(struct int_register *src, struct cdb *cdb)
 {
 	if (cdb->tag == src->tag) {
-		vlog("Pulling register %d from cdb\n", src->tag);
 		src->ready = true;
 		src->val = cdb->val;
 	}
@@ -30,7 +30,7 @@ pull_matching_tag(struct int_register *src, struct cdb *cdbs, int cdb_count)
 struct sched_inst_arg {
 	int cdb_count;
 	struct cdb *cdbs;
-	deque_t *exe_queue;
+	struct fu_set **fus;
 };
 
 /* schedule logic for a single reservation station. Designed to be called
@@ -42,9 +42,11 @@ schedule_inst(void *rs_, void *sched_arg_)
 	struct sched_inst_arg *arg = sched_arg_;
 	int cdb_count = arg->cdb_count;
 	struct cdb *cdbs = arg->cdbs;
-	deque_t *exe_queue = arg->exe_queue;
+	struct fu_set **fus = arg->fus;
 
-	vlog("Scheduling instruction %d\n", rs->dest_reg_tag);
+	if (rs->fired)
+		return;
+	vlog_inst(rs->dest_reg_tag, "Schedule");
 	struct int_register *src;
 	bool all_sources_ready = true;
 	for (int i = 0; i < SRC_REGISTER_COUNT; ++i) {
@@ -52,20 +54,20 @@ schedule_inst(void *rs_, void *sched_arg_)
 		pull_matching_tag(src, cdbs, cdb_count);
 		all_sources_ready = all_sources_ready && src->ready;
 	}
-	if (all_sources_ready /* TODO && FU is not busy */) {
-		vlog("Firing instruction %d\n", rs->dest_reg_tag);
-		deque_append(exe_queue, rs);
+	if (all_sources_ready && !issue_instruction(fus, rs)) {
+		vlog_inst(rs->dest_reg_tag, "Fire");
+		rs->fired = true;
 	}
 }
 
 /* Schedules instructions to be run */
 void
 schedule(deque_t *sched_queue, struct cdb *cdbs, int cdb_count,
-	 struct fu_set *fus[], deque_t *exe_queue)
+	 struct fu_set *fus[])
 {
 	struct sched_inst_arg arg;
 	arg.cdb_count = cdb_count;
 	arg.cdbs = cdbs;
-	arg.exe_queue = exe_queue;
+	arg.fus = fus;
 	deque_foreach(sched_queue, &schedule_inst, &arg);
 }
