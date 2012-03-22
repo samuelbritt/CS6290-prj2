@@ -13,6 +13,22 @@
 #include "execute.h"
 #include "schedule.h"
 
+/* A singular FU of a given type, with its pipeline */
+struct func_unit {
+	bool busy;
+	int latency;
+	struct reservation_station **pipeline;
+};
+
+/* Groups together all FUs of a particular type */
+struct fu_set {
+	int count;
+	struct func_unit *fus;
+};
+
+/* Global array of all FUs */
+struct fu_set *all_fus[FU_TYPE_COUNT];
+
 /* Maps FU_TYPE to its latency */
 int fu_latencies[] = { 1, 2, 3 };
 
@@ -37,10 +53,10 @@ static void
 execute_update_fu_pipeline(struct func_unit *fu)
 {
 	for (int i = fu->latency - 1; i > 0; --i) {
-		if (fu->pipeline[i] == NULL) {
-			fu->pipeline[i] = fu->pipeline[i - 1];
-			fu->pipeline[i - 1] = NULL;
-		}
+		if (fu->pipeline[i] != NULL)
+			continue;
+		fu->pipeline[i] = fu->pipeline[i - 1];
+		fu->pipeline[i - 1] = NULL;
 	}
 }
 
@@ -95,15 +111,14 @@ issue_instruction_(struct fu_set *fu_set, struct reservation_station *rs)
  * FU of the type specified by `rs`. If successful, returns 0. If no free FU is
  * available, returns 1 */
 int
-issue_instruction(struct fu_set **fu_sets, struct reservation_station *rs)
+issue_instruction(struct reservation_station *rs)
 {
-	struct fu_set *set = fu_sets[rs->fu_type];
-	return issue_instruction_(set, rs);
+	return issue_instruction_(all_fus[rs->fu_type], rs);
 }
 
 /* Creates and returns an `fu_set`, which contains the array of `func_unit`s
  * The return val can be freed with free() */
-struct fu_set *
+static struct fu_set *
 create_fu_set(int fu_type, int fu_count)
 {
 	struct reservation_station **rs_arr;
@@ -124,11 +139,27 @@ create_fu_set(int fu_type, int fu_count)
 	return set;
 }
 
+/* Inits all the fus */
+void
+exe_init(int fu0_count, int fu1_count, int fu2_count)
+{
+	all_fus[0] = create_fu_set(FU0, fu0_count);
+	all_fus[1] = create_fu_set(FU1, fu1_count);
+	all_fus[2] = create_fu_set(FU2, fu2_count);
+}
+
+void
+exe_destroy()
+{
+	for (int i = 0; i < FU_TYPE_COUNT; ++i)
+		free(all_fus[i]);
+}
+
 /* Execution pipeline stage. Updates all FUs */
 void
-execute(struct fu_set *fus[])
+execute()
 {
 	for (int i = 0; i < FU_TYPE_COUNT; ++i) {
-		execute_fu_set(fus[i]);
+		execute_fu_set(all_fus[i]);
 	}
 }

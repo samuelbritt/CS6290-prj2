@@ -37,20 +37,16 @@ tomasulo_sim(const struct options * const opt)
 		cdbs[i].tag = -1;
 	}
 
-	struct fu_set *fu0 = create_fu_set(FU0, opt->fu0_count);
-	struct fu_set *fu1 = create_fu_set(FU1, opt->fu1_count);
-	struct fu_set *fu2 = create_fu_set(FU2, opt->fu2_count);
-	struct fu_set *fus[] = {fu0, fu1, fu2};
-
 	disp_init();
 	sched_init();
+	exe_init(opt->fu0_count, opt->fu1_count, opt->fu2_count);
 
 	int clock = 0;
 	do {
 		vlog("\n----- Cycle %d -----\n", clock);
 		/* state_update(); */
-		execute(fus);
-		schedule(cdbs, opt->cdb_count, fus);
+		execute();
+		schedule(cdbs, opt->cdb_count);
 		dispatch(reg_file);
 		instruction_fetch(opt->trace_file, opt->fetch_rate);
 		clock++;
@@ -62,4 +58,5 @@ tomasulo_sim(const struct options * const opt)
 
 	disp_destroy();
 	sched_destroy();
+	exe_destroy();
 }

@@ -32,7 +32,6 @@ pull_matching_tag(struct int_register *src, struct cdb *cdbs, int cdb_count)
 struct sched_inst_arg {
 	int cdb_count;
 	struct cdb *cdbs;
-	struct fu_set **fus;
 };
 
 /* schedule logic for a single reservation station. Designed to be called
@@ -44,7 +43,6 @@ schedule_inst(void *rs_, void *sched_arg_)
 	struct sched_inst_arg *arg = sched_arg_;
 	int cdb_count = arg->cdb_count;
 	struct cdb *cdbs = arg->cdbs;
-	struct fu_set **fus = arg->fus;
 
 	if (rs->fired)
 		return;
@@ -56,7 +54,7 @@ schedule_inst(void *rs_, void *sched_arg_)
 		pull_matching_tag(src, cdbs, cdb_count);
 		all_sources_ready = all_sources_ready && src->ready;
 	}
-	if (all_sources_ready && !issue_instruction(fus, rs)) {
+	if (all_sources_ready && !issue_instruction(rs)) {
 		vlog_inst(rs->dest_reg_tag, "Fire");
 		rs->fired = true;
 	}
@@ -95,12 +93,11 @@ sched_destroy()
 
 /* Schedules instructions to be run */
 void
-schedule(struct cdb *cdbs, int cdb_count, struct fu_set *fus[])
+schedule(struct cdb *cdbs, int cdb_count)
 {
 	struct sched_inst_arg arg;
 	arg.cdb_count = cdb_count;
 	arg.cdbs = cdbs;
-	arg.fus = fus;
 	deque_foreach(sched_queue, &schedule_inst, &arg);
 }
 
