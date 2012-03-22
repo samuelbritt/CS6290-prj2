@@ -1,4 +1,6 @@
 #include "deque.h"
+#include "logger.h"
+
 #include "schedule.h"
 #include "common.h"
 

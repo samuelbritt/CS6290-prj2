@@ -45,12 +45,22 @@ struct int_register {
 	int val;
 };
 
+
 /* Common data bus */
 struct cdb {
 	int tag;
 	int val;
 	int reg_num;
 	bool busy;
+};
+
+/* Instruction as read from file */
+struct instruction {
+	int id;
+	void *addr;
+	int fu_type;
+	int dest_reg_num;
+	int src_reg_num[SRC_REGISTER_COUNT];
 };
 
 struct reservation_station {

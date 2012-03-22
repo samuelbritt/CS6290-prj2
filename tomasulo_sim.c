@@ -6,107 +6,12 @@
 #include "deque.h"
 
 #include "tomasulo_sim.h"
+#include "instruction_fetch.h"
+#include "dispatch.h"
 #include "schedule.h"
 #include "execute.h"
 #include "common.h"
 #include "logger.h"
-
-/* Counter for the number of fetched instructions. Useful for tags */
-static int instruction_count = 1;
-
-struct instruction {
-	int id;
-	void *addr;
-	int fu_type;
-	int dest_reg_num;
-	int src_reg_num[SRC_REGISTER_COUNT];
-};
-
-/* Fetches `fetch_rate` instructions and puts them in the dispatch queue */
-static void
-instruction_fetch(FILE *trace_file, int fetch_rate, deque_t *dispatch_queue)
-{
-	int instructions_fetched = 0;
-	while ((instructions_fetched++ < fetch_rate) && !feof(trace_file)) {
-		struct instruction *inst = emalloc(sizeof(*inst));
-		int n = fscanf(trace_file, "%p %d %d %d %d\n", &inst->addr,
-			       &inst->fu_type, &inst->dest_reg_num,
-			       &inst->src_reg_num[0], &inst->src_reg_num[1]);
-		if (n < 5)
-			fail("Invalid instruction read\n");
-		inst->id = instruction_count++;
-		vlog("Adding instruction %d (%p %1d %2d %2d %2d) to dispatch queue.\n",
-		     inst->id, inst->addr, inst->fu_type, inst->dest_reg_num,
-		     inst->src_reg_num[0], inst->src_reg_num[1]);
-		deque_append(dispatch_queue, inst);
-	}
-}
-
-/* Inits a reservation station source slot given the state of the corresponding
- * register in the reg_file */
-static void
-rs_src_init(struct int_register *rs_src, struct int_register *reg_file_reg)
-{
-	if (reg_file_reg->ready) {
-		rs_src->val = reg_file_reg->val;
-		rs_src->ready = true;
-	} else {
-		rs_src->tag = reg_file_reg->tag;
-		rs_src->ready = false;
-	}
-}
-
-/* Initializes a reservation station for the given instruction. */
-static struct reservation_station *
-reservation_station_init(struct reservation_station *rs,
-			 struct instruction *inst,
-			 struct int_register reg_file[])
-{
-	rs->fu_type = inst->fu_type;
-	rs->dest_reg_index = inst->dest_reg_num;
-	rs->dest_reg_tag = inst->id;
-	for (int i = 0; i < SRC_REGISTER_COUNT; ++i) {
-		int reg_index = inst->src_reg_num[i];
-		if (reg_index >= 0) {
-			rs_src_init(&rs->src[i], &reg_file[reg_index]);
-		} else {
-			/* the instruction doesn't use this register, so it
-			 * is ready regardless of its value */
-			rs->src[i].ready = true;
-		}
-	}
-	return rs;
-}
-
-/* dispatch logic for a single instruction. Returns a new
- * reservation_station. Destroy with free() */
-static struct reservation_station *
-dispatch_inst(struct instruction *inst, struct int_register reg_file[])
-{
-	vlog("Dispatching instruction %d\n", inst->id);
-	struct reservation_station *rs = ecalloc(sizeof(*rs));
-	reservation_station_init(rs, inst, reg_file);
-	if (rs->dest_reg_index >= 0) {
-		reg_file[rs->dest_reg_index].tag = rs->dest_reg_tag;
-		reg_file[rs->dest_reg_index].ready = false;
-	}
-	return rs;
-}
-
-/* Dispatches instructions to the scheduler */
-static void
-dispatch(deque_t *dispatch_queue, struct int_register reg_file[],
-	 deque_t *sched_queue)
-{
-	struct instruction *inst;
-	struct reservation_station *rs;
-	while (!deque_is_empty(dispatch_queue)) {
-		inst = deque_delete_first(dispatch_queue);
-		rs = dispatch_inst(inst, reg_file);
-		deque_append(sched_queue, rs);
-		free(inst);
-	}
-}
 
 /* Writes results */
 static void
