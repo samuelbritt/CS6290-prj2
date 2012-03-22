@@ -3,7 +3,7 @@
 #include "logger.h"
 #include "common.h"
 
-#include "instruction_fetch.h"
+#include "fetch.h"
 
 /* Counter for the number of fetched instructions. Useful for tags */
 static int instruction_count = 1;

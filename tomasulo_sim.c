@@ -6,7 +6,7 @@
 #include "deque.h"
 
 #include "tomasulo_sim.h"
-#include "instruction_fetch.h"
+#include "fetch.h"
 #include "dispatch.h"
 #include "schedule.h"
 #include "execute.h"
