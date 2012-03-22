@@ -19,8 +19,9 @@ struct options {
 	int cdb_count;
 	int fetch_rate;
 	FILE *trace_file;
+	int max_cycles;
 };
 
-void tomasulo_sim(const struct options * const opt);
+int tomasulo_sim(const struct options * const opt);
 
 #endif /* end of include guard: TOMASULO_SIM_H_ */

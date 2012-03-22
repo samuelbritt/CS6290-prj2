@@ -50,7 +50,12 @@ Tomasulo Algorithm
       Verbose mode: print the progress of the simulation; e.g. print
       notifications when an instruction is fetched, dispatched, etc.
 
-  - `--fetch-rate=<value>` or `-n=<value>`
+  - `-m <value>`, `--max-cycles=<value>`
+
+      Limit the number of cycles of the simulation to at most <value>.
+      This is useful in debugging to prevent infinite loops.
+
+  - `-n <value>`, `--fetch-rate=<value>`
 
       Set the fetch rate for the simulation; i.e., the number of
       instructions fetched per cycle. Defaults to 1.
@@ -64,7 +69,7 @@ Tomasulo Algorithm
       Set the number of functional units for functional unit type 0,
       1, or 2. Defaults to 1.
 
-  - `--cdb=<value>`, `-c=<value>`
+  - `-c <value>`, `--cdb=<value>`
 
       Set the number of common data busses for the simulation.
       Defaults to 1.

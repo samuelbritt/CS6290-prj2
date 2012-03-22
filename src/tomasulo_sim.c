@@ -21,9 +21,10 @@ state_update()
 }
 
 /* Runs the actual tomasulo pipeline*/
-void
+int
 tomasulo_sim(const struct options * const opt)
 {
+	int ret = 0;
 	struct int_register reg_file[ARCH_REGISTER_COUNT];
 	for (int i = 0; i < ARCH_REGISTER_COUNT; ++i) {
 		reg_file[i].ready = true;
@@ -50,13 +51,19 @@ tomasulo_sim(const struct options * const opt)
 		dispatch(reg_file);
 		instruction_fetch(opt->trace_file, opt->fetch_rate);
 		clock++;
-	} while (!disp_queue_is_empty() ||
-		 !sched_queue_is_empty() ||
-		 0
+	} while (((opt->max_cycles && clock < opt->max_cycles)) &&
+		 (!disp_queue_is_empty() ||
+		  !sched_queue_is_empty())
 		 );
+
+	if (opt->max_cycles && clock >= opt->max_cycles) {
+		vlog("Error: Max number of cycles reached\n");
+		ret = 1;
+	}
 	vlog("Simulation complete.\n");
 
 	disp_destroy();
 	sched_destroy();
 	exe_destroy();
+	return ret;
 }
