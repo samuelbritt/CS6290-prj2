@@ -9,6 +9,7 @@
 #include "execute.h"
 #include "common.h"
 
+/* Maps FU_TYPE to its latency */
 int fu_latencies[] = { 1, 2, 3 };
 
 /* Broadcasts and finishes the last instruction in the FU pipeline, if
@@ -41,7 +42,6 @@ execute_fu(struct func_unit *fu)
 {
 	execute_last_inst(fu);
 	execute_update_fu_pipeline(fu);
-
 }
 
 static void
@@ -57,20 +57,19 @@ struct fu_set *
 create_fu_set(int fu_type, int fu_count)
 {
 	struct reservation_station **rs_arr;
-	struct func_unit *fus;
 	int latency = fu_latencies[fu_type];
 
 	 /* Allocate one big chunk of memory and divide it */
 	struct fu_set *set = emalloc(sizeof(*set) +
-				     fu_count * (sizeof(*fus) +
+				     fu_count * (sizeof(*set->fus) +
 						 latency * sizeof(*rs_arr)));
 	set->count = fu_count;
-	fus = (struct func_unit *) (set + 1);
-	rs_arr = (struct reservation_station **) (fus + fu_count);
+	set->fus = (struct func_unit *) (set + 1);
+	rs_arr = (struct reservation_station **) (set->fus + fu_count);
 	for (int i = 0; i < fu_count; ++i) {
-		fus[i].pipeline = rs_arr + i * latency;
-		fus[i].latency = latency;
-		fus[i].busy = 0;
+		set->fus[i].pipeline = rs_arr + i * latency;
+		set->fus[i].latency = latency;
+		set->fus[i].busy = 0;
 	}
 	return set;
 }
