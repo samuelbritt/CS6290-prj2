@@ -18,9 +18,7 @@ fetch_single_inst(FILE *trace_file)
 	if (n < 5)
 		fail("Invalid instruction read\n");
 	inst->id = instruction_count++;
-	vlog("Adding instruction %d (%p %1d %2d %2d %2d) to dispatch queue.\n",
-	     inst->id, inst->addr, inst->fu_type, inst->dest_reg_num,
-	     inst->src_reg_num[0], inst->src_reg_num[1]);
+	vlog_inst(inst->id, "Fetch");
 	return inst;
 }
 

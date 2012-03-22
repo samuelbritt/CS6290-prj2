@@ -45,7 +45,7 @@ reservation_station_init(struct reservation_station *rs,
 static struct reservation_station *
 dispatch_inst(struct instruction *inst, struct int_register reg_file[])
 {
-	vlog("Dispatching instruction %d\n", inst->id);
+	vlog_inst(inst->id, "Dispatch");
 	struct reservation_station *rs = ecalloc(sizeof(*rs));
 	reservation_station_init(rs, inst, reg_file);
 	if (rs->dest_reg_index >= 0) {
