@@ -4,6 +4,15 @@
 
 #include <deque.c>
 
+/* utils */
+static void print_int(void *i, void *str)
+{
+	char *s1 = str;
+	char s2[1024];
+	sprintf(s2, "%d -> ", *(int *) i);
+	strcat(s1, s2);
+}
+
 /* Tests */
 
 void test_deque_create_destroy(CuTest *tc)
@@ -85,6 +94,44 @@ void test_deque_prepend(CuTest *tc)
 			CuAssertPtrEquals(tc, nodes[j-1],
 					  deque_next(nodes[j]));
 	}
+	deque_destroy(d);
+}
+
+int comp(void *a_, void *b_)
+{
+	int a = *(int *) a_;
+	int b = *(int *) b_;
+	if (a < b)
+		return -1;
+	if (a > b)
+		return 1;
+	return 0;
+}
+
+void test_insert_sorted(CuTest *tc)
+{
+	deque_t *d = deque_create();
+	int node_count = 3;
+	int vals[node_count];
+	for (int i = 0; i < node_count; ++i) {
+		vals[i] = i;
+	}
+
+	deque_node_t *n1 = deque_insert_sorted(d, &vals[1], comp);
+	CuAssertPtrEquals(tc, n1, deque_first(d));
+	CuAssertPtrEquals(tc, n1, deque_last(d));
+
+	deque_node_t *n2 = deque_insert_sorted(d, &vals[2], comp);
+	CuAssertPtrEquals(tc, n1, deque_first(d));
+	CuAssertPtrEquals(tc, n2, deque_next(n1));
+	CuAssertPtrEquals(tc, n2, deque_last(d));
+
+	deque_node_t *n0 = deque_insert_sorted(d, &vals[0], comp);
+	CuAssertPtrEquals(tc, n0, deque_first(d));
+	CuAssertPtrEquals(tc, n1, deque_next(n0));
+	CuAssertPtrEquals(tc, n2, deque_next(n1));
+	CuAssertPtrEquals(tc, n2, deque_last(d));
+
 	deque_destroy(d);
 }
 
@@ -218,14 +265,6 @@ void test_delete_last(CuTest *tc)
 	deque_destroy(d);
 }
 
-static void print_int(void *i, void *str)
-{
-	char *s1 = str;
-	char s2[1024];
-	sprintf(s2, "%d -> ", *(int *) i);
-	strcat(s1, s2);
-}
-
 void test_foreach(CuTest *tc)
 {
 	deque_t *d = deque_create();
@@ -264,6 +303,7 @@ CuSuite* test_deque_get_suite()
 	SUITE_ADD_TEST(suite, test_delete_node);
 	SUITE_ADD_TEST(suite, test_delete_first);
 	SUITE_ADD_TEST(suite, test_delete_last);
+	SUITE_ADD_TEST(suite, test_insert_sorted);
 
 	return suite;
 }

@@ -112,12 +112,21 @@ deque_prepend(deque_t *deque, void *data)
 	return deque_insert_after(deque->head, node);
 }
 
-
 deque_node_t *
 deque_append(deque_t *deque, void *data)
 {
 	deque_node_t *node = deque_node_create(data);
 	return deque_insert_before(deque->tail, node);
+}
+
+deque_node_t *
+deque_insert_sorted(deque_t *deque, void *data, deque_comp_func comp_func)
+{
+	deque_node_t *new_node = deque_node_create(data);
+	deque_node_t *p = deque_first(deque);
+	while (p != deque->tail && comp_func(data, p->data) > 0)
+		p = p->next;
+	return deque_insert_before(p, new_node);
 }
 
 /* Remove node from list without destroying the node */
