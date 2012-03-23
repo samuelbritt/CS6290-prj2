@@ -12,6 +12,7 @@
 
 #include "execute.h"
 #include "schedule.h"
+#include "state_update.h"
 
 /* A singular FU of a given type, with its pipeline */
 struct func_unit {
@@ -32,27 +33,6 @@ struct fu_set *all_fus[FU_TYPE_COUNT];
 /* Maps FU_TYPE to its latency */
 int fu_latencies[] = { 1, 2, 3 };
 
-/* Broadcasts the instruction to the cdb */
-static void
-broadcast_inst(struct reservation_station *rs, struct cdb *cdb)
-{
-	vlog_inst(rs->dest_reg_tag, "Broadcast");
-	cdb->busy = true;
-	cdb->tag = rs->dest_reg_tag;
-	cdb->reg_num = rs->dest_reg_index;
-}
-
-/* returns the first free cdb in CDB_SET if one is available, else NULL */
-static struct cdb *
-find_free_cdb()
-{
-	for (int i = 0; i < CDB_SET.count; ++i) {
-		if (!CDB_SET.cdbs[i].busy)
-			return &CDB_SET.cdbs[i];
-	}
-	return NULL;
-}
-
 /* Broadcasts and finishes the last instruction in the FU pipeline, if
  * possible */
 static void
@@ -60,11 +40,8 @@ execute_last_inst(struct func_unit *fu)
 {
 	int latency = fu->latency;
 	struct reservation_station **last_rs = &fu->pipeline[latency - 1];
-	struct cdb *cdb = find_free_cdb();
-	if (*last_rs && cdb) {
+	if (*last_rs && !retire_inst(*last_rs)) {
 		vlog_inst((*last_rs)->dest_reg_tag, "Complete");
-		broadcast_inst(*last_rs, cdb);
-		sched_delete_rs(*last_rs);
 		*last_rs = NULL;
 	}
 }

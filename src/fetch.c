@@ -7,7 +7,7 @@
 #include "dispatch.h"
 
 /* Counter for the number of fetched instructions. Useful for tags */
-static int instruction_count = 1;
+static int instruction_count = 0;
 
 static struct instruction *
 fetch_single_inst(FILE *trace_file)

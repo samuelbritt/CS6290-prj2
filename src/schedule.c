@@ -7,25 +7,40 @@
 
 deque_t *sched_queue;
 
-/* pulls data from cdb into reg if tags match */
 static void
-pull_if_tags_match(struct int_register *src, struct cdb *cdb)
+update_rs_from_cdb(void *rs_, void *cdb_)
 {
-	if (cdb->tag == src->tag) {
-		src->ready = true;
-		src->val = cdb->val;
+	struct reservation_station *rs = rs_;
+	struct cdb *cdb = cdb_;
+
+	struct int_register *src;
+	for (int i = 0; i < SRC_REGISTER_COUNT; ++i) {
+		src = &rs->src[i];
+		if (!src->ready && cdb->tag == src->tag) {
+			vlog_inst(cdb->tag, "Update Scheduling Queue");
+			src->val = cdb->val;
+			src->ready = true;
+		}
 	}
 }
 
-/* Compares reg to all cdbs, and pulls the data in the tags match */
-static void
-pull_matching_tag(struct int_register *src)
+/* Broadcasts the cdb to all the reservation stations, updating their source
+ * registers if the tags match */
+void
+sched_broadcast_cdb(struct cdb *cdb)
 {
-	struct cdb *cdb;
-	for (int i = 0; i < CDB_SET.count; ++i) {
-		cdb = &CDB_SET.cdbs[i];
-		pull_if_tags_match(src, cdb);
+	deque_foreach(sched_queue, update_rs_from_cdb, cdb);
+}
+
+/* returns true if all src values are ready for the given rs */
+static bool
+all_sources_ready(struct reservation_station *rs)
+{
+	bool ready = true;
+	for (int i = 0; i < SRC_REGISTER_COUNT; ++i) {
+		ready = ready && rs->src[i].ready;
 	}
+	return ready;
 }
 
 /* schedule logic for a single reservation station. Designed to be called
@@ -38,14 +53,7 @@ schedule_inst(void *rs_, void *arg)
 	if (rs->fired)
 		return;
 	vlog_inst(rs->dest_reg_tag, "Schedule");
-	struct int_register *src;
-	bool all_sources_ready = true;
-	for (int i = 0; i < SRC_REGISTER_COUNT; ++i) {
-		src = &rs->src[i];
-		pull_matching_tag(src);
-		all_sources_ready = all_sources_ready && src->ready;
-	}
-	if (all_sources_ready && !issue_instruction(rs)) {
+	if (all_sources_ready(rs) && !issue_instruction(rs)) {
 		vlog_inst(rs->dest_reg_tag, "Fire");
 		rs->fired = true;
 	}

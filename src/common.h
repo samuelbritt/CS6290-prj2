@@ -51,15 +51,7 @@ struct cdb {
 	int tag;
 	int val;
 	int reg_num;
-	bool busy;
 };
-
-struct cdb_set {
-	int count;
-	struct cdb *cdbs;
-};
-
-extern struct cdb_set CDB_SET;
 
 /* Instruction as read from file */
 struct instruction {

@@ -11,8 +11,11 @@
 struct cdb;
 
 /* Schedules instructions to be run */
-void
-schedule();
+void schedule();
+
+/* Broadcasts the cdb to all the reservation stations, updating their source
+ * registers if the tags match */
+void sched_broadcast_cdb(struct cdb *cdb);
 
 /* Manipulates the internal scheduling queue */
 void sched_init(); /* Must be called before any other function */
