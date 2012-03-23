@@ -12,6 +12,8 @@ void su_init(int cdb_count);
  * CDBs are busy), returns 1 */
 int retire_inst(struct reservation_station *rs);
 
+/* Updates both the scheduling queue and the register file where necessary.
+ * Updates are done in tag order from the CDBs */
 void state_update(struct int_register *reg_file);
 
 #endif /* end of include guard: STATE_UPDATE_H_ */
