@@ -52,7 +52,7 @@ tomasulo_sim(const struct options * const opt)
 		printf("---- Sim Finished ----\n");
 	}
 
-	/* printf("Trace Filename: %s\n", opt->trace_filename, ); */
+	printf("Trace Filename: %s\n", opt->trace_filename);
 	printf("Fetch Rate %d\n", opt->fetch_rate);
 	printf("Result Buses: %d\n", opt->cdb_count);
 	printf("k0_FUs: %d\n", opt->fu0_count);

@@ -45,7 +45,6 @@ process_args(int argc, char *const argv[], struct options *opt)
 {
 	char *arg0 = strdup(argv[0]);
 	char *program_name = basename(arg0);
-	char *trace_file_path;
 
 	char *short_opts = "0:1:2:c:n:m:vh";
 	const struct option long_opts[] = {
@@ -108,22 +107,21 @@ process_args(int argc, char *const argv[], struct options *opt)
 	int positional_argc = argc - optind;
 	switch (positional_argc) {
 		case 1:
-			trace_file_path = argv[optind];
+			opt->trace_filename = argv[optind];
 			break;
 		case 6:
-			opt->fetch_rate = atoi(argv[optind++]);
-			opt->fu0_count  = atoi(argv[optind++]);
-			opt->fu1_count  = atoi(argv[optind++]);
-			opt->fu2_count  = atoi(argv[optind++]);
-			opt->cdb_count  = atoi(argv[optind++]);
-			trace_file_path = argv[optind];
+			opt->fu0_count      = atoi(argv[optind++]);
+			opt->fu1_count      = atoi(argv[optind++]);
+			opt->fu2_count      = atoi(argv[optind++]);
+			opt->cdb_count      = atoi(argv[optind++]);
+			opt->trace_filename = argv[optind];
 			break;
 		default:
 			fprintf(stderr, "Error: invalid arguments\n");
 			print_usage(stderr, program_name);
 			exit(EXIT_FAILURE);
 	}
-	opt->trace_file = fopen(trace_file_path, "r");
+	opt->trace_file = fopen(opt->trace_filename, "r");
 
 	if (opt->fu0_count < 1 ||
 	    opt->fu1_count < 1 ||
@@ -145,8 +143,8 @@ process_args(int argc, char *const argv[], struct options *opt)
 	     "    k0:         %d\n"
 	     "    k1:         %d\n"
 	     "    k2:         %d\n",
-	     trace_file_path, opt->fetch_rate, opt->cdb_count, opt->fu0_count,
-	     opt->fu1_count, opt->fu2_count);
+	     opt->trace_filename, opt->fetch_rate, opt->cdb_count,
+	     opt->fu0_count, opt->fu1_count, opt->fu2_count);
 	if (opt->max_cycles)
 		vlog("Will run at most %d cycles.", opt->max_cycles);
 	free(arg0);

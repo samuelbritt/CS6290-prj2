@@ -18,6 +18,7 @@ struct options {
 	int fu2_count;
 	int cdb_count;
 	int fetch_rate;
+	char *trace_filename;
 	FILE *trace_file;
 	int max_cycles;
 };
