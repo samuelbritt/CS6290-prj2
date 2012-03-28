@@ -9,6 +9,23 @@
 /* Counter for the number of fetched instructions. Useful for tags */
 static int instruction_count = 0;
 
+/* logs the fetch stage, if verbose is set */
+static void
+log_fetch(struct instruction *inst)
+{
+	struct int_register dest;
+	dest.index = inst->dest_reg_num;
+	dest.tag = -1;
+
+	struct int_register srcs[SRC_REGISTER_COUNT];
+	for (int i = 0; i < SRC_REGISTER_COUNT; ++i) {
+		srcs[i].index = inst->src_reg_num[i];
+		srcs[i].tag = -1;
+	}
+
+	vlog_inst(inst->fu_type, &dest, srcs, "FETCH");
+}
+
 static struct instruction *
 fetch_single_inst(FILE *trace_file)
 {
@@ -19,7 +36,7 @@ fetch_single_inst(FILE *trace_file)
 	if (n < 5)
 		fail("Invalid instruction read\n");
 	inst->id = instruction_count++;
-	vlog_inst(inst->id, "Fetch");
+	log_fetch(inst);
 	return inst;
 }
 

@@ -40,10 +40,8 @@ execute_last_inst(struct func_unit *fu)
 {
 	int latency = fu->latency;
 	struct reservation_station **last_rs = &fu->pipeline[latency - 1];
-	if (*last_rs && !retire_inst(*last_rs)) {
-		vlog_inst((*last_rs)->dest.tag, "Complete");
+	if (*last_rs && !retire_inst(*last_rs))
 		*last_rs = NULL;
-	}
 }
 
 /* moves the instructions down the FU pipeline */

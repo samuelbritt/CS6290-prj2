@@ -17,7 +17,6 @@ update_rs_from_cdb(void *rs_, void *cdb_)
 	for (int i = 0; i < SRC_REGISTER_COUNT; ++i) {
 		src = &rs->src[i];
 		if (!src->ready && cdb->tag == src->tag) {
-			vlog_inst(cdb->tag, "Update Scheduling Queue");
 			src->val = cdb->val;
 			src->ready = true;
 		}
@@ -52,11 +51,9 @@ schedule_inst(void *rs_, void *arg)
 
 	if (rs->fired)
 		return;
-	vlog_inst(rs->dest.tag, "Schedule");
-	if (all_sources_ready(rs) && !issue_instruction(rs)) {
-		vlog_inst(rs->dest.tag, "Fire");
+	vlog_inst(rs->fu_type, &rs->dest, rs->src, "SCHED");
+	if (all_sources_ready(rs) && !issue_instruction(rs))
 		rs->fired = true;
-	}
 }
 
 /* Wrapper functions for deque */

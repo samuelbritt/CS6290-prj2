@@ -55,12 +55,11 @@ update_reg_file(void *rs_, void *reg_file_)
 	struct reservation_station *rs = rs_;
 	struct int_register *reg_file = reg_file_;
 
-	vlog_inst(rs->dest.tag, "State Update");
+	vlog_inst(rs->fu_type, &rs->dest, rs->src, "SU");
 	if (rs->dest.index < 0)
 		return;
 	struct int_register *reg = &reg_file[rs->dest.index];
 	if (rs->dest.tag == reg->tag) {
-		vlog_inst(rs->dest.tag, "Update Dest Register");
 		reg->ready = true;
 	}
 }
@@ -88,4 +87,3 @@ state_update(struct int_register *reg_file)
 		su_state.cdb_use_count--;
 	}
 }
-

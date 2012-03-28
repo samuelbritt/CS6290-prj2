@@ -47,8 +47,8 @@ static void
 dispatch_inst(struct instruction *inst, struct int_register reg_file[],
 	      struct reservation_station *rs)
 {
-	vlog_inst(inst->id, "Dispatch");
 	reservation_station_init(rs, inst, reg_file);
+	vlog_inst(rs->fu_type, &rs->dest, rs->src, "DISPATCH");
 	if (rs->dest.index >= 0) {
 		reg_file[rs->dest.index].tag = rs->dest.tag;
 		reg_file[rs->dest.index].ready = false;
