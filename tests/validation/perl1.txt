@@ -1,0 +1,16 @@
+---- Sim Finished ----
+Trace Filename: traces/perl.txt
+Fetch Rate: 1
+Result Buses: 1
+k0_FUs: 1
+k1_FUs: 1
+k2_FUs: 1
+
+Cycles: 10029
+Instructions: 10000
+Insn Fired (avg): 0.997108
+Insn Fired (sdev): 0.564446
+IPC (avg): 0.997108
+IPC (sdev): 0.0536986
+SchedQ Size (avg): 21.323
+SchedQ Size (max): 27

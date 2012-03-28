@@ -1,0 +1,78 @@
+Cycle 0
+op: k0 - dest/tag: 0/-1 - src1/tag: -1/-1 - src2/tag: 7/-1 - stage: FETCH
+op: k1 - dest/tag: 2/-1 - src1/tag: 0/-1 - src2/tag: 22/-1 - stage: FETCH
+op: k2 - dest/tag: 3/-1 - src1/tag: 0/-1 - src2/tag: 2/-1 - stage: FETCH
+op: k1 - dest/tag: -1/-1 - src1/tag: 2/-1 - src2/tag: 0/-1 - stage: FETCH
+
+Cycle 1
+op: k0 - dest/tag: 0/0 - src1/tag: -1/-1 - src2/tag: 7/-1 - stage: DISPATCH
+op: k1 - dest/tag: 2/1 - src1/tag: 0/0 - src2/tag: 22/-1 - stage: DISPATCH
+op: k2 - dest/tag: 3/2 - src1/tag: 0/0 - src2/tag: 2/1 - stage: DISPATCH
+op: k1 - dest/tag: -1/3 - src1/tag: 2/1 - src2/tag: 0/0 - stage: DISPATCH
+
+Cycle 2
+op: k0 - dest/tag: 0/0 - src1/tag: -1/-1 - src2/tag: 7/-1 - stage: SCHED
+op: k1 - dest/tag: 2/1 - src1/tag: 0/0 - src2/tag: 22/-1 - stage: SCHED
+op: k2 - dest/tag: 3/2 - src1/tag: 0/0 - src2/tag: 2/1 - stage: SCHED
+op: k1 - dest/tag: -1/3 - src1/tag: 2/1 - src2/tag: 0/0 - stage: SCHED
+
+Cycle 3
+op: k0 - dest/tag: 0/0 - src1/tag: -1/-1 - src2/tag: 7/-1 - stage: EX(0):0
+op: k1 - dest/tag: 2/1 - src1/tag: 0/0 - src2/tag: 22/-1 - stage: SCHED
+op: k2 - dest/tag: 3/2 - src1/tag: 0/0 - src2/tag: 2/1 - stage: SCHED
+op: k1 - dest/tag: -1/3 - src1/tag: 2/1 - src2/tag: 0/0 - stage: SCHED
+
+Cycle 4
+op: k0 - dest/tag: 0/0 - src1/tag: -1/-1 - src2/tag: 7/-1 - stage: SU
+op: k1 - dest/tag: 2/1 - src1/tag: 0/0 - src2/tag: 22/-1 - stage: SCHED
+op: k2 - dest/tag: 3/2 - src1/tag: 0/0 - src2/tag: 2/1 - stage: SCHED
+op: k1 - dest/tag: -1/3 - src1/tag: 2/1 - src2/tag: 0/0 - stage: SCHED
+
+Cycle 5
+op: k1 - dest/tag: 2/1 - src1/tag: 0/0 - src2/tag: 22/-1 - stage: EX(0):0
+op: k2 - dest/tag: 3/2 - src1/tag: 0/0 - src2/tag: 2/1 - stage: SCHED
+op: k1 - dest/tag: -1/3 - src1/tag: 2/1 - src2/tag: 0/0 - stage: SCHED
+
+Cycle 6
+op: k1 - dest/tag: 2/1 - src1/tag: 0/0 - src2/tag: 22/-1 - stage: EX(1):0
+op: k2 - dest/tag: 3/2 - src1/tag: 0/0 - src2/tag: 2/1 - stage: SCHED
+op: k1 - dest/tag: -1/3 - src1/tag: 2/1 - src2/tag: 0/0 - stage: SCHED
+
+Cycle 7
+op: k1 - dest/tag: 2/1 - src1/tag: 0/0 - src2/tag: 22/-1 - stage: SU
+op: k2 - dest/tag: 3/2 - src1/tag: 0/0 - src2/tag: 2/1 - stage: SCHED
+op: k1 - dest/tag: -1/3 - src1/tag: 2/1 - src2/tag: 0/0 - stage: SCHED
+
+Cycle 8
+op: k2 - dest/tag: 3/2 - src1/tag: 0/0 - src2/tag: 2/1 - stage: EX(0):0
+op: k1 - dest/tag: -1/3 - src1/tag: 2/1 - src2/tag: 0/0 - stage: EX(0):0
+
+Cycle 9
+op: k2 - dest/tag: 3/2 - src1/tag: 0/0 - src2/tag: 2/1 - stage: EX(1):0
+op: k1 - dest/tag: -1/3 - src1/tag: 2/1 - src2/tag: 0/0 - stage: EX(1):0
+
+Cycle 10
+op: k2 - dest/tag: 3/2 - src1/tag: 0/0 - src2/tag: 2/1 - stage: EX(2):0
+op: k1 - dest/tag: -1/3 - src1/tag: 2/1 - src2/tag: 0/0 - stage: SU
+
+Cycle 11
+op: k2 - dest/tag: 3/2 - src1/tag: 0/0 - src2/tag: 2/1 - stage: SU
+
+Cycle 12
+
+---- Sim Finished ----
+Trace Filename: traces/test1.txt
+Fetch Rate: 4
+Result Buses: 2
+k0_FUs: 2
+k1_FUs: 2
+k2_FUs: 2
+
+Cycles: 13
+Instructions: 4
+Insn Fired (avg): 0.307692
+Insn Fired (sdev): 0.630425
+IPC (avg): 0.307692
+IPC (sdev): 0.480384
+SchedQ Size (avg): 2.15385
+SchedQ Size (max): 4

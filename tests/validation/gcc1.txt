@@ -1,0 +1,16 @@
+---- Sim Finished ----
+Trace Filename: traces/gcc.txt
+Fetch Rate: 8
+Result Buses: 2
+k0_FUs: 3
+k1_FUs: 3
+k2_FUs: 3
+
+Cycles: 5011
+Instructions: 10000
+Insn Fired (avg): 1.99561
+Insn Fired (sdev): 0.184154
+IPC (avg): 1.99561
+IPC (sdev): 0.0846543
+SchedQ Size (avg): 3749.75
+SchedQ Size (max): 7508
