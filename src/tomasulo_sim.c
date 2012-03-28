@@ -31,6 +31,7 @@ tomasulo_sim(const struct options * const opt)
 	exe_init(opt->fu0_count, opt->fu1_count, opt->fu2_count);
 	su_init(opt->cdb_count);
 
+	int instructions_fetched = 0;
 	int clock = 0;
 	do {
 		vlog("\n----- Cycle %d -----\n", clock);
@@ -38,17 +39,28 @@ tomasulo_sim(const struct options * const opt)
 		execute();
 		schedule();
 		dispatch(reg_file);
-		instruction_fetch(opt->trace_file, opt->fetch_rate);
+		instructions_fetched += instruction_fetch(opt->trace_file,
+							  opt->fetch_rate);
 		clock++;
 	} while (((!opt->max_cycles || clock < opt->max_cycles)) &&
 		 (!disp_queue_is_empty() || !sched_queue_is_empty()));
 
 	if (opt->max_cycles && clock >= opt->max_cycles) {
-		vlog("Error: Max number of cycles reached\n");
+		fprintf(stderr, "Error: Max number of cycles reached\n");
 		ret = 1;
 	} else {
-		vlog("Simulation complete.\n");
+		printf("---- Sim Finished ----\n");
 	}
+
+	/* printf("Trace Filename: %s\n", opt->trace_filename, ); */
+	printf("Fetch Rate %d\n", opt->fetch_rate);
+	printf("Result Buses: %d\n", opt->cdb_count);
+	printf("k0_FUs: %d\n", opt->fu0_count);
+	printf("k1_FUs: %d\n", opt->fu1_count);
+	printf("k2_FUs: %d\n", opt->fu2_count);
+	printf("\n");
+	printf("Cycles: %d\n", clock);
+	printf("Instructions: %d\n", instructions_fetched);
 
 	disp_destroy();
 	sched_destroy();

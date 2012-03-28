@@ -23,12 +23,15 @@ fetch_single_inst(FILE *trace_file)
 	return inst;
 }
 
-/* Fetches `fetch_rate` instructions and puts them in the dispatch queue */
-void
+/* Fetches `fetch_rate` instructions and puts them in the dispatch queue.
+ * Returns the number of instructions successfully fetched. */
+int
 instruction_fetch(FILE *trace_file, int fetch_rate)
 {
 	int instructions_fetched = 0;
-	while ((instructions_fetched++ < fetch_rate) && !feof(trace_file)) {
+	while ((instructions_fetched < fetch_rate) && !feof(trace_file)) {
 		fetch_single_inst(trace_file);
+		instructions_fetched++;
 	}
+	return instructions_fetched;
 }

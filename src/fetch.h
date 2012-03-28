@@ -6,8 +6,9 @@
 #ifndef FETCH_H_
 #define FETCH_H_
 
-/* Fetches `fetch_rate` instructions and puts them in the dispatch queue */
-void instruction_fetch(FILE *trace_file, int fetch_rate);
+/* Fetches `fetch_rate` instructions and puts them in the dispatch queue.
+ * Returns the number of instructions successfully fetched. */
+int instruction_fetch(FILE *trace_file, int fetch_rate);
 
 #endif /* end of include guard: FETCH_H_ */
 
