@@ -16,5 +16,8 @@ int retire_inst(struct reservation_station *rs);
  * Updates are done in tag order from the CDBs */
 void state_update(struct int_register *reg_file);
 
+/* frees any memory used by the state update unit */
+void su_destroy();
+
 #endif /* end of include guard: STATE_UPDATE_H_ */
 
