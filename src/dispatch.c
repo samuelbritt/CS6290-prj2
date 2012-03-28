@@ -28,8 +28,8 @@ reservation_station_init(struct reservation_station *rs,
 			 struct int_register reg_file[])
 {
 	rs->fu_type = inst->fu_type;
-	rs->dest_reg_index = inst->dest_reg_num;
-	rs->dest_reg_tag = inst->id;
+	rs->dest.index = inst->dest_reg_num;
+	rs->dest.tag = inst->id;
 	for (int i = 0; i < SRC_REGISTER_COUNT; ++i) {
 		int reg_index = inst->src_reg_num[i];
 		if (reg_index >= 0) {
@@ -49,9 +49,9 @@ dispatch_inst(struct instruction *inst, struct int_register reg_file[],
 {
 	vlog_inst(inst->id, "Dispatch");
 	reservation_station_init(rs, inst, reg_file);
-	if (rs->dest_reg_index >= 0) {
-		reg_file[rs->dest_reg_index].tag = rs->dest_reg_tag;
-		reg_file[rs->dest_reg_index].ready = false;
+	if (rs->dest.index >= 0) {
+		reg_file[rs->dest.index].tag = rs->dest.tag;
+		reg_file[rs->dest.index].ready = false;
 	}
 }
 

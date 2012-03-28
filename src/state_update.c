@@ -15,8 +15,8 @@ struct {
 static int
 compare_func(void *a, void *b)
 {
-	int tag_a = ((struct reservation_station *) a)->dest_reg_tag;
-	int tag_b = ((struct reservation_station *) b)->dest_reg_tag;
+	int tag_a = ((struct reservation_station *) a)->dest.tag;
+	int tag_b = ((struct reservation_station *) b)->dest.tag;
 	if (tag_a > tag_b)
 		return 1;
 	if (tag_a < tag_b)
@@ -55,12 +55,12 @@ update_reg_file(void *rs_, void *reg_file_)
 	struct reservation_station *rs = rs_;
 	struct int_register *reg_file = reg_file_;
 
-	vlog_inst(rs->dest_reg_tag, "State Update");
-	if (rs->dest_reg_index < 0)
+	vlog_inst(rs->dest.tag, "State Update");
+	if (rs->dest.index < 0)
 		return;
-	struct int_register *reg = &reg_file[rs->dest_reg_index];
-	if (rs->dest_reg_tag == reg->tag) {
-		vlog_inst(rs->dest_reg_tag, "Update Dest Register");
+	struct int_register *reg = &reg_file[rs->dest.index];
+	if (rs->dest.tag == reg->tag) {
+		vlog_inst(rs->dest.tag, "Update Dest Register");
 		reg->ready = true;
 	}
 }
@@ -71,8 +71,8 @@ update_sched_queue(void *completed_rs_, void *arg)
 	struct reservation_station *completed_rs = completed_rs_;
 
 	struct cdb cdb;
-	cdb.tag = completed_rs->dest_reg_tag;
-	cdb.reg_num = completed_rs->dest_reg_index;
+	cdb.tag = completed_rs->dest.tag;
+	cdb.reg_num = completed_rs->dest.index;
 	cdb.val = 0;
 	sched_broadcast_cdb(&cdb);
 	sched_delete_rs(completed_rs);

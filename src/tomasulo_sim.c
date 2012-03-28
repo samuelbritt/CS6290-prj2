@@ -34,7 +34,7 @@ tomasulo_sim(const struct options * const opt)
 	int instructions_fetched = 0;
 	int clock = 0;
 	do {
-		vlog("\n----- Cycle %d -----\n", clock);
+		vlog("Cycle %d -----\n", clock);
 		state_update(reg_file);
 		execute();
 		schedule();
@@ -42,6 +42,7 @@ tomasulo_sim(const struct options * const opt)
 		instructions_fetched += instruction_fetch(opt->trace_file,
 							  opt->fetch_rate);
 		clock++;
+		vlog("\n");
 	} while (((!opt->max_cycles || clock < opt->max_cycles)) &&
 		 (!disp_queue_is_empty() || !sched_queue_is_empty()));
 

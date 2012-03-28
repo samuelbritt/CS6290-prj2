@@ -52,9 +52,9 @@ schedule_inst(void *rs_, void *arg)
 
 	if (rs->fired)
 		return;
-	vlog_inst(rs->dest_reg_tag, "Schedule");
+	vlog_inst(rs->dest.tag, "Schedule");
 	if (all_sources_ready(rs) && !issue_instruction(rs)) {
-		vlog_inst(rs->dest_reg_tag, "Fire");
+		vlog_inst(rs->dest.tag, "Fire");
 		rs->fired = true;
 	}
 }

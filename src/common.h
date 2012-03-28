@@ -44,6 +44,7 @@ struct int_register {
 	bool ready;
 	int tag;
 	int val;
+	int index;  /* index into reg_file */
 };
 
 /* Common data bus */
@@ -65,8 +66,7 @@ struct instruction {
 struct reservation_station {
 	bool fired;       /* so we don't re-schedule instructions */
 	int fu_type;
-	int dest_reg_index;  /* index into reg_file */
-	int dest_reg_tag;
+	struct int_register dest;
 	struct int_register src[SRC_REGISTER_COUNT];
 };
 
