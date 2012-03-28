@@ -110,6 +110,7 @@ process_args(int argc, char *const argv[], struct options *opt)
 			opt->trace_filename = argv[optind];
 			break;
 		case 6:
+			opt->fetch_rate     = atoi(argv[optind++]);
 			opt->fu0_count      = atoi(argv[optind++]);
 			opt->fu1_count      = atoi(argv[optind++]);
 			opt->fu2_count      = atoi(argv[optind++]);
