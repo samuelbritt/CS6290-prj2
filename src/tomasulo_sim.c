@@ -22,8 +22,9 @@ tomasulo_sim(const struct options * const opt)
 	struct int_register reg_file[ARCH_REGISTER_COUNT];
 	for (int i = 0; i < ARCH_REGISTER_COUNT; ++i) {
 		reg_file[i].ready = true;
-		reg_file[i].tag = 0;
+		reg_file[i].tag = -1;
 		reg_file[i].val = i;
+		reg_file[i].index = i;
 	}
 
 	disp_init();
