@@ -136,16 +136,6 @@ process_args(int argc, char *const argv[], struct options *opt)
 		exit(EXIT_FAILURE);
 	}
 
-	vlog("Running in verbose mode\n"
-	     "Provided options:\n"
-	     "    trace-file: %s\n"
-	     "    fetch-rate: %d\n"
-	     "    cdb-count:  %d\n"
-	     "    k0:         %d\n"
-	     "    k1:         %d\n"
-	     "    k2:         %d\n",
-	     opt->trace_filename, opt->fetch_rate, opt->cdb_count,
-	     opt->fu0_count, opt->fu1_count, opt->fu2_count);
 	if (opt->max_cycles)
 		vlog("Will run at most %d cycles.", opt->max_cycles);
 	free(arg0);
