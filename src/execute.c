@@ -56,9 +56,26 @@ execute_update_fu_pipeline(struct func_unit *fu)
 	}
 }
 
+/* prints out the state of the FU, if in verbose mode */
+static void
+print_fu_state(struct func_unit *fu)
+{
+	struct reservation_station *rs;
+	char *fmt = "EX(%d):%d"; /* TODO not sure what the second number is for */
+	char stage[1024];
+	for (int i = fu->latency - 1; i >= 0; --i) {
+		rs = fu->pipeline[i];
+		if (rs) {
+			sprintf(stage, fmt, i, 0);
+			vlog_inst(rs->fu_type, &rs->dest, rs->src, stage);
+		}
+	}
+}
+
 static void
 execute_fu(struct func_unit *fu)
 {
+	print_fu_state(fu);
 	execute_last_inst(fu);
 	execute_update_fu_pipeline(fu);
 }
@@ -66,8 +83,9 @@ execute_fu(struct func_unit *fu)
 static void
 execute_fu_set(struct fu_set *set)
 {
-	for (int i = 0; i < set->count; ++i)
+	for (int i = 0; i < set->count; ++i) {
 		execute_fu(&set->fus[i]);
+	}
 }
 
 /* Returns true if the FU is free for the next instruction */
