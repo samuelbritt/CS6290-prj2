@@ -34,7 +34,7 @@ debug:
 	@$(MAKE) clean; $(MAKE) DEBUG="$(DBFLAGS)"
 
 test:
-	@$(MAKE); $(MAKE) -C $(TESTDIR); $(TESTDIR)/validation.sh; $(TESTDIR)/tests;
+	@$(MAKE); $(MAKE) -C $(TESTDIR); $(TESTDIR)/validation.py; $(TESTDIR)/tests;
 
 clean:
 	@rm -rf $(BUILDDIR) $(TGTS);
