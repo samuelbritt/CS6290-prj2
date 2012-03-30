@@ -19,6 +19,7 @@ import os
 import sys
 import subprocess
 
+# Usage: tomalulo_sim [-v] <fetch-rate> <k0> <k1> <k2> <cdb-count> <trace_file>
 validation_runs = {
     "barnes1.txt": {'opts': (4, 2, 2, 2, 2), 'verbose':  False, 'trace': "barnes.txt"}, 
     "barnes2.txt": {'opts': (4, 3, 3, 3, 4), 'verbose':  False, 'trace': "barnes.txt"}, 
@@ -34,6 +35,7 @@ validation_runs = {
     "test3_2.txt": {'opts': (4, 2, 2, 2, 1), 'verbose':  True,  'trace': "test3.txt"}, 
     "test4_1.txt": {'opts': (4, 2, 2, 2, 2), 'verbose':  True,  'trace': "test4.txt"}, 
     "test4_2.txt": {'opts': (4, 2, 2, 2, 1), 'verbose':  True,  'trace': "test4.txt"}, 
+    "barnes-big.txt": {'opts': (4, 3, 3, 3, 4), 'verbose':  True, 'trace': "barnes.txt"}, 
 }
 
 traces_dir = "traces"
@@ -55,19 +57,22 @@ def diff_cmd(validation_file):
     return cmd
 
 if __name__ == '__main__':
-    if len(sys.argv) == 1:
-        for r in validation_runs:
+    args = sys.argv[1:]
+    if len(args) == 0:
+        # No arguments: run a diff on all the short validation runs
+        short_runs = [r for r in validation_runs if "big" not in r]
+        for r in short_runs:
             c = diff_cmd(r)
             subprocess.call(c, shell=True)
     else:
-        validation_file = sys.argv[1]
+        validation_file = args[0]
         try:
             r = validation_runs[validation_file]
         except KeyError:
             print "Invalid validation file"
             sys.exit(1)
 
-        if len(sys.argv) > 2 and sys.argv[2] == "diff":
+        if len(args) > 1 and args[1] == "diff":
             c = diff_cmd(validation_file)
         else:
             c = run_cmd(validation_file)
