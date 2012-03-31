@@ -141,8 +141,6 @@ op: k2 - dest/tag: -1/11 - src1/tag: 3/10 - src2/tag: 0/8 - stage: EX(2):0
 Cycle 15
 op: k2 - dest/tag: -1/11 - src1/tag: 3/10 - src2/tag: 0/8 - stage: SU
 
-Cycle 16
-
 ---- Sim Finished ----
 Trace Filename: traces/test4.txt
 Fetch Rate: 4
@@ -151,7 +149,7 @@ k0_FUs: 2
 k1_FUs: 2
 k2_FUs: 2
 
-Cycles: 17
+Cycles: 16
 Instructions: 12
 Insn Fired (avg): 0.705882
 Insn Fired (sdev): 0.685994
