@@ -27,6 +27,7 @@ tomasulo_sim(const struct options * const opt)
 		reg_file[i].index = i;
 	}
 
+	vlog_init();
 	disp_init();
 	sched_init();
 	exe_init(opt->fu0_count, opt->fu1_count, opt->fu2_count);
@@ -42,6 +43,7 @@ tomasulo_sim(const struct options * const opt)
 		dispatch(reg_file);
 		instructions_fetched += instruction_fetch(opt->trace_file,
 							  opt->fetch_rate);
+		vlog_flush();
 		vlog("\n");
 	} while (((!opt->max_cycles || clock < opt->max_cycles)) &&
 		 (!disp_queue_is_empty() || !sched_queue_is_empty()));
@@ -63,6 +65,7 @@ tomasulo_sim(const struct options * const opt)
 	printf("Cycles: %d\n", clock);
 	printf("Instructions: %d\n", instructions_fetched);
 
+	vlog_destroy();
 	disp_destroy();
 	sched_destroy();
 	exe_destroy();

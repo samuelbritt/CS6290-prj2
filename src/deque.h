@@ -23,10 +23,10 @@ deque_t *deque_create();
 deque_node_t *deque_prepend(deque_t *deque, void *new_data);
 deque_node_t *deque_append(deque_t *deque, void *new_data);
 
-/* Comparison function for sorted insert. Returns 
- * 	 1 if a > b
- * 	-1 if a < b
- * 	 0 if a == b
+/* Comparison function for sorted insert. Returns integer x, where
+ * 	x > 0   if a > b
+ * 	x < 0   if a < b
+ * 	x == 0  if a == b
  */
 typedef int (*deque_comp_func)(void *a, void *b);
 /* Insert data sorted according to comp_func */
