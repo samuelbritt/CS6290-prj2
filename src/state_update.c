@@ -17,11 +17,7 @@ compare_func(void *a, void *b)
 {
 	int tag_a = ((struct reservation_station *) a)->dest.tag;
 	int tag_b = ((struct reservation_station *) b)->dest.tag;
-	if (tag_a > tag_b)
-		return 1;
-	if (tag_a < tag_b)
-		return -1;
-	return 0;
+	return tag_a - tag_b;
 }
 
 /* Attempts to retire the instruction and return 0. If it can't (because all the
