@@ -6,11 +6,11 @@ k0_FUs: 3
 k1_FUs: 3
 k2_FUs: 3
 
-Cycles: 5011
+Cycles: 5010
 Instructions: 10000
-Insn Fired (avg): 1.99561
-Insn Fired (sdev): 0.184154
-IPC (avg): 1.99561
-IPC (sdev): 0.0846543
-SchedQ Size (avg): 3749.75
+Insn Fired (avg): 1.99601
+Insn Fired (sdev): 0.181983
+IPC (avg): 1.99601
+IPC (sdev): 0.0798204
+SchedQ Size (avg): 3750.5
 SchedQ Size (max): 7508

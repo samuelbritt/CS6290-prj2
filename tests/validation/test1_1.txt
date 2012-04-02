@@ -68,9 +68,9 @@ k2_FUs: 2
 
 Cycles: 12
 Instructions: 4
-Insn Fired (avg): 0.307692
-Insn Fired (sdev): 0.630425
-IPC (avg): 0.307692
-IPC (sdev): 0.480384
-SchedQ Size (avg): 2.15385
+Insn Fired (avg): 0.333333
+Insn Fired (sdev): 0.62361
+IPC (avg): 0.333333
+IPC (sdev): 0.471405
+SchedQ Size (avg): 2.33333
 SchedQ Size (max): 4

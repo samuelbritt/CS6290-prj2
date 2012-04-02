@@ -1,16 +1,16 @@
 ---- Sim Finished ----
-Trace Filename: traces/barnes.txt
+Trace Filename: ./traces/barnes.txt
 Fetch Rate: 4
 Result Buses: 2
 k0_FUs: 2
 k1_FUs: 2
 k2_FUs: 2
 
-Cycles: 5006
+Cycles: 5005
 Instructions: 10000
-Insn Fired (avg): 1.9976
-Insn Fired (sdev): 0.259089
-IPC (avg): 1.9976
-IPC (sdev): 0.066256
-SchedQ Size (avg): 2503
+Insn Fired (avg): 1.998
+Insn Fired (sdev): 0.257545
+IPC (avg): 1.998
+IPC (sdev): 0.0599367
+SchedQ Size (avg): 2503.5
 SchedQ Size (max): 5006
