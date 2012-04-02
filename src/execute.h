@@ -25,7 +25,7 @@ void exe_destroy();
 /* Inserts the reservation station into the first pipeline stage of a free
  * FU of the type specified by `rs`. If successful, returns 0. If no free FU is
  * available, returns 1 */
-int issue_instruction(struct reservation_station *rs);
+int exe_issue_instruction(struct reservation_station *rs);
 
 /* Execution pipeline stage. Updates all FUs */
 void execute();

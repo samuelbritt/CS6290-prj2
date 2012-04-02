@@ -52,7 +52,7 @@ execute_last_inst(struct func_unit *fu)
 {
 	int latency = fu->latency;
 	struct reservation_station **last_rs = &fu->pipeline[latency - 1];
-	if (*last_rs && !retire_inst(*last_rs))
+	if (*last_rs && !su_retire_inst(*last_rs))
 		*last_rs = NULL;
 }
 
@@ -121,7 +121,7 @@ find_free_fu(struct fu_set *set)
  * FU of the type specified by `rs`. If successful, returns 0. If no free FU is
  * available, returns 1 */
 int
-issue_instruction(struct reservation_station *rs)
+exe_issue_instruction(struct reservation_station *rs)
 {
 	struct fu_set *set = all_fus[rs->fu_type];
 	struct func_unit *free_fu = find_free_fu(set);

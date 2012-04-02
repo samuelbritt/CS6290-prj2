@@ -52,7 +52,7 @@ schedule_inst(void *rs_, void *arg)
 	if (rs->fired)
 		return;
 	vlog_inst(rs->fu_type, &rs->dest, rs->src, "SCHED");
-	if (all_sources_ready(rs) && !issue_instruction(rs))
+	if (all_sources_ready(rs) && !exe_issue_instruction(rs))
 		rs->fired = true;
 }
 

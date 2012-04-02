@@ -12,7 +12,7 @@ void su_init(int cdb_count);
 
 /* Attempts to retire the instruction and return 0. If it can't (because all the
  * CDBs are busy), returns 1 */
-int retire_inst(struct reservation_station *rs);
+int su_retire_inst(struct reservation_station *rs);
 
 /* Updates both the scheduling queue and the register file where necessary.
  * Updates are done in tag order from the CDBs */

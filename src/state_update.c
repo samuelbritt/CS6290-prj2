@@ -23,7 +23,7 @@ compare_func(void *a, void *b)
 /* Attempts to retire the instruction and return 0. If it can't (because all the
  * CDBs are busy), returns 1 */
 int
-retire_inst(struct reservation_station *rs)
+su_retire_inst(struct reservation_station *rs)
 {
 	if (su_state.cdb_use_count < su_state.cdb_total_count) {
 		deque_insert_sorted(su_state.queue, rs, compare_func);
