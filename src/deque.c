@@ -1,9 +1,9 @@
+#include "deque.h"
+#include "common.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-
-#include "deque.h"
-#include "common.h"
 
 struct deque_node {
 	void *data;

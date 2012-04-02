@@ -1,11 +1,11 @@
-#include "deque.h"
-#include "logger.h"
-
 #include "schedule.h"
 #include "execute.h"
 #include "common.h"
+#include "logger.h"
 
-deque_t *sched_queue;
+#include "deque.h"
+
+static deque_t *sched_queue;
 
 static void
 update_rs_from_cdb(void *rs_, void *cdb_)
@@ -56,6 +56,13 @@ schedule_inst(void *rs_, void *arg)
 		rs->fired = true;
 }
 
+/* Schedules instructions to be run */
+void
+schedule()
+{
+	deque_foreach(sched_queue, &schedule_inst, NULL);
+}
+
 /* Wrapper functions for deque */
 struct reservation_station *
 sched_add_rs()
@@ -64,6 +71,7 @@ sched_add_rs()
 	deque_append(sched_queue, rs);
 	return rs;
 }
+
 void
 sched_delete_rs(struct reservation_station *rs)
 {
@@ -75,21 +83,15 @@ sched_queue_is_empty()
 {
 	return deque_is_empty(sched_queue);
 }
-void
-sched_init()
-{
-	sched_queue = deque_create();
-}
+
 void
 sched_destroy()
 {
 	deque_destroy(sched_queue);
 }
 
-/* Schedules instructions to be run */
 void
-schedule()
+sched_init()
 {
-	deque_foreach(sched_queue, &schedule_inst, NULL);
+	sched_queue = deque_create();
 }
-

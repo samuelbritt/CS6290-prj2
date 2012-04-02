@@ -1,10 +1,12 @@
+#include "logger.h"
+#include "common.h"
+
+#include "deque.h"
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdbool.h>
 
-#include "logger.h"
-#include "deque.h"
-#include "common.h"
 
 /* Print information at each step */
 int VERBOSE = 0;
@@ -12,7 +14,7 @@ int VERBOSE = 0;
 /* Maintain a sorted queue of pipeline stages (sorted on destination tag). If
  * VERBOSE is set, print to stdout and empty the queue when flush() is called.
  */
-deque_t *log_queue;
+static deque_t *log_queue;
 
 struct log_node {
 	int tag;
@@ -102,18 +104,6 @@ vlog_flush()
 	clear_log_queue();
 }
 
-void
-vlog_init()
-{
-	log_queue = deque_create();
-}
-
-void
-vlog_destroy()
-{
-	deque_destroy(log_queue);
-}
-
 /* Logs to stdout if `verbose` is set */
 void
 vlog(const char *format, ...)
@@ -124,4 +114,16 @@ vlog(const char *format, ...)
 	va_start(arglist, format);
 	vprintf(format, arglist);
 	va_end(arglist);
+}
+
+void
+vlog_destroy()
+{
+	deque_destroy(log_queue);
+}
+
+void
+vlog_init()
+{
+	log_queue = deque_create();
 }

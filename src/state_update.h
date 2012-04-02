@@ -5,6 +5,8 @@
 #ifndef STATE_UPDATE_H_
 #define STATE_UPDATE_H_
 
+#include "common.h"
+
 /* Call before anything else */
 void su_init(int cdb_count);
 

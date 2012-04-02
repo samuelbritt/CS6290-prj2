@@ -3,16 +3,16 @@
  * pipeline and the functional units.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "deque.h"
-#include "logger.h"
-#include "common.h"
-
 #include "execute.h"
 #include "schedule.h"
 #include "state_update.h"
+#include "logger.h"
+#include "common.h"
+
+#include "deque.h"
+
+#include <stdio.h>
+#include <stdlib.h>
 
 /* A singular FU of a given type, with its pipeline */
 struct func_unit {
@@ -28,10 +28,22 @@ struct fu_set {
 };
 
 /* Global array of all FUs */
-struct fu_set *all_fus[FU_TYPE_COUNT];
+static struct fu_set *all_fus[FU_TYPE_COUNT];
 
 /* Maps FU_TYPE to its latency */
-int fu_latencies[] = { 1, 2, 3 };
+static int fu_latencies[] = { 1, 2, 3 };
+
+/* moves the instructions down the FU pipeline */
+static void
+execute_update_fu_pipeline(struct func_unit *fu)
+{
+	for (int i = fu->latency - 1; i > 0; --i) {
+		if (fu->pipeline[i] != NULL)
+			continue;
+		fu->pipeline[i] = fu->pipeline[i - 1];
+		fu->pipeline[i - 1] = NULL;
+	}
+}
 
 /* Broadcasts and finishes the last instruction in the FU pipeline, if
  * possible */
@@ -44,16 +56,11 @@ execute_last_inst(struct func_unit *fu)
 		*last_rs = NULL;
 }
 
-/* moves the instructions down the FU pipeline */
 static void
-execute_update_fu_pipeline(struct func_unit *fu)
+execute_fu(struct func_unit *fu)
 {
-	for (int i = fu->latency - 1; i > 0; --i) {
-		if (fu->pipeline[i] != NULL)
-			continue;
-		fu->pipeline[i] = fu->pipeline[i - 1];
-		fu->pipeline[i - 1] = NULL;
-	}
+	execute_last_inst(fu);
+	execute_update_fu_pipeline(fu);
 }
 
 /* prints out the state of the FU, if in verbose mode */
@@ -73,18 +80,20 @@ log_fu_state(struct func_unit *fu, int fu_number)
 }
 
 static void
-execute_fu(struct func_unit *fu)
-{
-	execute_last_inst(fu);
-	execute_update_fu_pipeline(fu);
-}
-
-static void
 execute_fu_set(struct fu_set *set)
 {
 	for (int i = 0; i < set->count; ++i) {
 		log_fu_state(&set->fus[i], i);
 		execute_fu(&set->fus[i]);
+	}
+}
+
+/* Execution pipeline stage. Updates all FUs */
+void
+execute()
+{
+	for (int i = 0; i < FU_TYPE_COUNT; ++i) {
+		execute_fu_set(all_fus[i]);
 	}
 }
 
@@ -160,13 +169,4 @@ exe_destroy()
 {
 	for (int i = 0; i < FU_TYPE_COUNT; ++i)
 		free(all_fus[i]);
-}
-
-/* Execution pipeline stage. Updates all FUs */
-void
-execute()
-{
-	for (int i = 0; i < FU_TYPE_COUNT; ++i) {
-		execute_fu_set(all_fus[i]);
-	}
 }

@@ -1,11 +1,11 @@
-#include "deque.h"
-#include "logger.h"
-#include "common.h"
-
 #include "dispatch.h"
 #include "schedule.h"
 
-deque_t *disp_queue;
+#include "common.h"
+#include "logger.h"
+#include "deque.h"
+
+static deque_t *disp_queue;
 
 /* Initializes a reservation station for the given instruction. */
 static void
@@ -47,30 +47,6 @@ dispatch_inst(struct instruction *inst, struct int_register reg_file[],
 	}
 }
 
-/* Wrapper functions for deque */
-struct instruction *
-disp_add_inst()
-{
-	struct instruction *inst = ecalloc(sizeof(*inst));
-	deque_append(disp_queue, inst);
-	return inst;
-}
-bool
-disp_queue_is_empty()
-{
-	return deque_is_empty(disp_queue);
-}
-void
-disp_init()
-{
-	disp_queue = deque_create();
-}
-void
-disp_destroy()
-{
-	deque_destroy(disp_queue);
-}
-
 /* Dispatches instructions to the scheduler */
 void
 dispatch(struct int_register reg_file[])
@@ -83,4 +59,31 @@ dispatch(struct int_register reg_file[])
 		dispatch_inst(inst, reg_file, rs);
 		free(inst);
 	}
+}
+
+/* Wrapper functions for deque */
+struct instruction *
+disp_add_inst()
+{
+	struct instruction *inst = ecalloc(sizeof(*inst));
+	deque_append(disp_queue, inst);
+	return inst;
+}
+
+bool
+disp_queue_is_empty()
+{
+	return deque_is_empty(disp_queue);
+}
+
+void
+disp_destroy()
+{
+	deque_destroy(disp_queue);
+}
+
+void
+disp_init()
+{
+	disp_queue = deque_create();
 }

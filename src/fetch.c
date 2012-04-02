@@ -1,10 +1,11 @@
-
-#include "deque.h"
-#include "logger.h"
-#include "common.h"
-
 #include "fetch.h"
 #include "dispatch.h"
+#include "common.h"
+#include "logger.h"
+
+#include "deque.h"
+
+#include <stdio.h>
 
 /* Counter for the number of fetched instructions. Useful for tags */
 static int instruction_count = 0;

@@ -1,11 +1,11 @@
-#include "deque.h"
+#include "state_update.h"
+#include "schedule.h"
 #include "logger.h"
 #include "common.h"
 
-#include "state_update.h"
-#include "schedule.h"
+#include "deque.h"
 
-struct {
+static struct {
 	deque_t *queue;
 	int cdb_total_count;
 	int cdb_use_count;
@@ -33,16 +33,17 @@ retire_inst(struct reservation_station *rs)
 	return 1;
 }
 
-void su_init(int cdb_count)
+static void
+update_sched_queue(void *completed_rs_, void *arg)
 {
-	su_state.queue = deque_create();
-	su_state.cdb_total_count = cdb_count;
-	su_state.cdb_use_count = 0;
-}
+	struct reservation_station *completed_rs = completed_rs_;
 
-void su_destroy()
-{
-	deque_destroy(su_state.queue);
+	struct cdb cdb;
+	cdb.tag = completed_rs->dest.tag;
+	cdb.reg_num = completed_rs->dest.index;
+	cdb.val = 0;
+	sched_broadcast_cdb(&cdb);
+	sched_delete_rs(completed_rs);
 }
 
 static void
@@ -60,19 +61,6 @@ update_reg_file(void *rs_, void *reg_file_)
 	}
 }
 
-static void
-update_sched_queue(void *completed_rs_, void *arg)
-{
-	struct reservation_station *completed_rs = completed_rs_;
-
-	struct cdb cdb;
-	cdb.tag = completed_rs->dest.tag;
-	cdb.reg_num = completed_rs->dest.index;
-	cdb.val = 0;
-	sched_broadcast_cdb(&cdb);
-	sched_delete_rs(completed_rs);
-}
-
 void
 state_update(struct int_register *reg_file)
 {
@@ -82,4 +70,16 @@ state_update(struct int_register *reg_file)
 		deque_delete_first(su_state.queue);
 		su_state.cdb_use_count--;
 	}
+}
+
+void su_destroy()
+{
+	deque_destroy(su_state.queue);
+}
+
+void su_init(int cdb_count)
+{
+	su_state.queue = deque_create();
+	su_state.cdb_total_count = cdb_count;
+	su_state.cdb_use_count = 0;
 }
