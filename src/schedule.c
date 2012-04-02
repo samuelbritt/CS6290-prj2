@@ -68,8 +68,7 @@ void
 sched_delete_rs(struct reservation_station *rs)
 {
 	rs = deque_delete(sched_queue, rs);
-	if (rs)
-		free(rs);
+	free(rs);
 }
 bool
 sched_queue_is_empty()
