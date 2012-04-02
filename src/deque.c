@@ -16,6 +16,7 @@ struct deque {
 	 * is tail->prev */
 	struct deque_node *head;
 	struct deque_node *tail;
+	int length;
 };
 
 static deque_node_t *
@@ -36,6 +37,7 @@ deque_create()
 	dq->tail = deque_node_create(NULL);
 	dq->head->next = dq->tail;
 	dq->tail->prev = dq->head;
+	dq->length = 0;
 	return dq;
 }
 
@@ -60,7 +62,13 @@ deque_last(deque_t *deque)
 bool
 deque_is_empty(deque_t *deque)
 {
-	return deque->head->next == deque->tail;
+	return deque->length == 0;
+}
+
+int
+deque_length(deque_t *deque)
+{
+	return deque->length;
 }
 
 void *
@@ -85,23 +93,25 @@ deque_foreach(deque_t *d, deque_func user_func, void *user_data)
 }
 
 static deque_node_t *
-deque_insert_before(deque_node_t *sibling, deque_node_t *new_node)
+deque_insert_before(deque_t *d, deque_node_t *sibling, deque_node_t *new_node)
 {
 	new_node->next = sibling;
 	new_node->prev = sibling->prev;
 	sibling->prev->next = new_node;
 	sibling->prev = new_node;
+	d->length++;
 	return new_node;
 }
 
 
 static deque_node_t *
-deque_insert_after(deque_node_t *sibling, deque_node_t *new_node)
+deque_insert_after(deque_t *d, deque_node_t *sibling, deque_node_t *new_node)
 {
 	new_node->next = sibling->next;
 	new_node->prev = sibling;
 	sibling->next->prev = new_node;
 	sibling->next = new_node;
+	d->length++;
 	return new_node;
 }
 
@@ -109,14 +119,14 @@ deque_node_t *
 deque_prepend(deque_t *deque, void *data)
 {
 	deque_node_t *node = deque_node_create(data);
-	return deque_insert_after(deque->head, node);
+	return deque_insert_after(deque, deque->head, node);
 }
 
 deque_node_t *
 deque_append(deque_t *deque, void *data)
 {
 	deque_node_t *node = deque_node_create(data);
-	return deque_insert_before(deque->tail, node);
+	return deque_insert_before(deque, deque->tail, node);
 }
 
 deque_node_t *
@@ -126,7 +136,7 @@ deque_insert_sorted(deque_t *deque, void *data, deque_comp_func comp_func)
 	deque_node_t *p = deque_first(deque);
 	while (p != deque->tail && comp_func(data, p->data) >= 0)
 		p = p->next;
-	return deque_insert_before(p, new_node);
+	return deque_insert_before(deque, p, new_node);
 }
 
 /* Remove node from list without destroying the node */
@@ -137,6 +147,7 @@ deque_remove_node(deque_t *deque, deque_node_t *node)
 	node->next->prev = node->prev;
 	node->next = NULL;
 	node->prev = NULL;
+	deque->length--;
 	return node;
 }
 

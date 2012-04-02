@@ -40,6 +40,9 @@ deque_node_t * deque_insert_sorted(deque_t *deque, void *data,
 /* returns true if empty */
 bool deque_is_empty(deque_t *deque);
 
+/* returns the number of nodes in the deque */
+int deque_length(deque_t *deque);
+
 /* read the data in the node */
 void *deque_node_get(deque_node_t *node);
 

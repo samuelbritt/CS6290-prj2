@@ -287,6 +287,33 @@ void test_foreach(CuTest *tc)
 	deque_destroy(d);
 }
 
+void test_length(CuTest *tc)
+{
+	deque_t *d = deque_create();
+	CuAssertIntEquals(tc, 0, deque_length(d));
+
+	int i = 1;
+	deque_append(d, &i);
+	CuAssertIntEquals(tc, 1, deque_length(d));
+
+	deque_prepend(d, &i);
+	CuAssertIntEquals(tc, 2, deque_length(d));
+
+	deque_insert_sorted(d, &i, comp);
+	CuAssertIntEquals(tc, 3, deque_length(d));
+
+	deque_delete_first(d);
+	CuAssertIntEquals(tc, 2, deque_length(d));
+
+	deque_delete_last(d);
+	CuAssertIntEquals(tc, 1, deque_length(d));
+
+	deque_delete(d, &i);
+	CuAssertIntEquals(tc, 0, deque_length(d));
+
+	deque_destroy(d);
+}
+
 /* Suite */
 CuSuite* test_deque_get_suite()
 {
@@ -304,6 +331,7 @@ CuSuite* test_deque_get_suite()
 	SUITE_ADD_TEST(suite, test_delete_first);
 	SUITE_ADD_TEST(suite, test_delete_last);
 	SUITE_ADD_TEST(suite, test_insert_sorted);
+	SUITE_ADD_TEST(suite, test_length);
 
 	return suite;
 }
