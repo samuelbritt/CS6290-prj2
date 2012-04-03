@@ -5,7 +5,6 @@
 
 #include "execute.h"
 #include "schedule.h"
-#include "state_update.h"
 #include "logger.h"
 #include "common.h"
 
