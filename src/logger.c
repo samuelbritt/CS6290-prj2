@@ -90,11 +90,12 @@ clear_log_queue()
 		free(deque_delete_first(log_queue));
 }
 
-static void
+static int
 print_node(void *node_, void *arg)
 {
 	struct log_node *node = node_;
 	vlog(node->msg);
+	return DEQUE_CONTINUE;
 }
 
 void

@@ -33,7 +33,7 @@ su_retire_inst(struct reservation_station *rs)
 	return 1;
 }
 
-static void
+static int
 update_sched_queue(void *completed_rs_, void *arg)
 {
 	struct reservation_station *completed_rs = completed_rs_;
@@ -44,21 +44,22 @@ update_sched_queue(void *completed_rs_, void *arg)
 	cdb.val = 0;
 	sched_broadcast_cdb(&cdb);
 	sched_delete_rs(completed_rs);
+	return DEQUE_CONTINUE;
 }
 
-static void
+static int
 update_reg_file(void *rs_, void *reg_file_)
 {
 	struct reservation_station *rs = rs_;
 	struct int_register *reg_file = reg_file_;
 
 	vlog_inst(rs->fu_type, &rs->dest, rs->src, "SU");
-	if (rs->dest.index < 0)
-		return;
-	struct int_register *reg = &reg_file[rs->dest.index];
-	if (rs->dest.tag == reg->tag) {
-		reg->ready = true;
+	if (rs->dest.index >= 0) {
+		struct int_register *reg = &reg_file[rs->dest.index];
+		if (rs->dest.tag == reg->tag)
+			reg->ready = true;
 	}
+	return DEQUE_CONTINUE;
 }
 
 void

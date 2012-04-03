@@ -84,11 +84,12 @@ deque_node_set(deque_node_t *node, void *data)
 }
 
 void
-deque_foreach(deque_t *d, deque_func user_func, void *user_data)
+deque_foreach(deque_t *d, deque_foreach_func user_func, void *user_data)
 {
 	deque_node_t *p;
 	for (p = deque_first(d); p != d->tail; p = deque_next(p)) {
-		user_func(p->data, user_data);
+		if (user_func(p->data, user_data) == DEQUE_STOP)
+			return;
 	}
 }
 

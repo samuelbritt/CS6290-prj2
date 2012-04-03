@@ -13,7 +13,7 @@
 static deque_t *sched_queue;
 static deque_t *unsched_queue;
 
-static void
+static int
 update_rs_from_cdb(void *rs_, void *cdb_)
 {
 	struct reservation_station *rs = rs_;
@@ -27,6 +27,7 @@ update_rs_from_cdb(void *rs_, void *cdb_)
 			src->ready = true;
 		}
 	}
+	return DEQUE_CONTINUE;
 }
 
 /* Broadcasts the cdb to all the reservation stations, updating their source
@@ -50,16 +51,17 @@ all_sources_ready(struct reservation_station *rs)
 
 /* schedule logic for a single reservation station. Designed to be called
  * from deque_foreach() */
-static void
+static int
 schedule_inst(void *rs_, void *arg)
 {
 	struct reservation_station *rs = rs_;
 
-	if (rs->fired)
-		return;
-	vlog_inst(rs->fu_type, &rs->dest, rs->src, "SCHED");
-	if (all_sources_ready(rs) && !exe_issue_instruction(rs))
-		rs->fired = true;
+	if (!rs->fired) {
+		vlog_inst(rs->fu_type, &rs->dest, rs->src, "SCHED");
+		if (all_sources_ready(rs) && !exe_issue_instruction(rs))
+			rs->fired = true;
+	}
+	return DEQUE_CONTINUE;
 }
 
 static void

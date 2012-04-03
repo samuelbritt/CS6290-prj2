@@ -60,9 +60,19 @@ deque_node_t *deque_last(deque_t *deque);
 void deque_node_set(deque_node_t *node, void *data);
 
 /* Call `user_func` on every node in deque. Convenience method for using
- * first(), next() and last() to iterate */
-typedef void (*deque_func)(void *node_data, void *user_data);
-void deque_foreach(deque_t *d, deque_func user_func, void *user_data);
+ * first(), next() and last() to iterate.
+ *
+ * The deque_foreach_func function returns an int from the deque_control enum.
+ * If it returns DEQUE_STOP at any point, the iteration will cease and return
+ * to the caller of deque_foreach(). Else it will continue until the end of
+ * the deque. */
+enum deque_control {
+	DEQUE_STOP,
+	DEQUE_CONTINUE
+};
+
+typedef int (*deque_foreach_func)(void *node_data, void *user_data);
+void deque_foreach(deque_t *d, deque_foreach_func user_func, void *user_data);
 
 
 /*
