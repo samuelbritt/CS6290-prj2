@@ -13,6 +13,10 @@ struct cdb;
 /* Schedules instructions to be run */
 void schedule();
 
+/* Wakes up an instruction eligible for execution on the given fu type and
+ * returns it. If there is no such instruction, returns NULL */
+struct reservation_station * sched_wakeup(int fu_type);
+
 /* Broadcasts the cdb to all the reservation stations, updating their source
  * registers if the tags match */
 void sched_broadcast_cdb(struct cdb *cdb);

@@ -38,7 +38,6 @@ sched_broadcast_cdb(struct cdb *cdb)
 	deque_foreach(sched_queue, update_rs_from_cdb, cdb);
 }
 
-/* returns true if all src values are ready for the given rs */
 static bool
 all_sources_ready(struct reservation_station *rs)
 {
@@ -49,18 +48,55 @@ all_sources_ready(struct reservation_station *rs)
 	return ready;
 }
 
+static bool
+is_eligible_for_execution(struct reservation_station *rs)
+{
+	return !rs->fired && all_sources_ready(rs);
+}
+
+/* Struct used as both input and output argument for find_eligible_rs(). */
+struct find_executable_rs_arg {
+	int fu_type;
+	struct reservation_station *executable_rs;
+};
+
+/* If the reservation station `rs_` is eligible for execution on the fu_type
+ * specified in `arg_`, which is of type struct find_executable_rs_arg, returns
+ * the reservation station in `arg_->eligible_rs`. Designed to be called from
+ * deque_foreach(). */
+static int
+find_executable_rs(void *rs_, void *arg_)
+{
+	struct reservation_station *rs = rs_;
+	struct find_executable_rs_arg *arg = arg_;
+	if (is_eligible_for_execution(rs) && rs->fu_type == arg->fu_type) {
+		rs->fired = true;
+		arg->executable_rs = rs;
+		return DEQUE_STOP;
+	}
+	return DEQUE_CONTINUE;
+}
+
+/* Wakes up an instruction eligible for execution on the given fu type and
+ * returns it. If there is no such instruction, returns NULL */
+struct reservation_station *
+sched_wakeup(int fu_type)
+{
+	struct find_executable_rs_arg arg;
+	arg.fu_type = fu_type;
+	arg.executable_rs = NULL;
+	deque_foreach(sched_queue, find_executable_rs, &arg);
+	return arg.executable_rs;
+}
+
 /* schedule logic for a single reservation station. Designed to be called
  * from deque_foreach() */
 static int
-schedule_inst(void *rs_, void *arg)
+print_inst(void *rs_, void *arg)
 {
 	struct reservation_station *rs = rs_;
-
-	if (!rs->fired) {
+	if (!rs->fired)
 		vlog_inst(rs->fu_type, &rs->dest, rs->src, "SCHED");
-		if (all_sources_ready(rs) && !exe_issue_instruction(rs))
-			rs->fired = true;
-	}
 	return DEQUE_CONTINUE;
 }
 
@@ -79,7 +115,7 @@ void
 schedule()
 {
 	tranfer_unsched_to_sched();
-	deque_foreach(sched_queue, &schedule_inst, NULL);
+	deque_foreach(sched_queue, &print_inst, NULL);
 }
 
 /* Wrapper functions for deque */
