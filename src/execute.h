@@ -22,10 +22,9 @@ void exe_init(int fu0_count, int fu1_count, int fu2_count);
 /* Frees memory used by the FUs */
 void exe_destroy();
 
-/* Inserts the reservation station into the first pipeline stage of a free
- * FU of the type specified by `rs`. If successful, returns 0. If no free FU is
- * available, returns 1 */
-int exe_issue_instruction(struct reservation_station *rs);
+/* Removes a completed instruction from the pipeline and returns it. If no
+ * instructions are ready for retirement, returns NULL. */
+struct reservation_station *exe_retire_inst();
 
 /* Execution pipeline stage. Updates all FUs */
 void execute();

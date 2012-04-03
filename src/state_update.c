@@ -1,5 +1,6 @@
 #include "state_update.h"
 #include "schedule.h"
+#include "execute.h"
 #include "logger.h"
 #include "common.h"
 
@@ -11,30 +12,8 @@ static struct {
 	int cdb_use_count;
 } su_state;
 
-/* Comparison function for sorted deque insert. Sorts based on dest tags */
 static int
-compare_func(void *a, void *b)
-{
-	int tag_a = ((struct reservation_station *) a)->dest.tag;
-	int tag_b = ((struct reservation_station *) b)->dest.tag;
-	return tag_a - tag_b;
-}
-
-/* Attempts to retire the instruction and return 0. If it can't (because all the
- * CDBs are busy), returns 1 */
-int
-su_retire_inst(struct reservation_station *rs)
-{
-	if (su_state.cdb_use_count < su_state.cdb_total_count) {
-		deque_insert_sorted(su_state.queue, rs, compare_func);
-		su_state.cdb_use_count++;
-		return 0;
-	}
-	return 1;
-}
-
-static int
-update_sched_queue(void *completed_rs_, void *arg)
+update_sched_queue(void *completed_rs_)
 {
 	struct reservation_station *completed_rs = completed_rs_;
 
@@ -53,7 +32,6 @@ update_reg_file(void *rs_, void *reg_file_)
 	struct reservation_station *rs = rs_;
 	struct int_register *reg_file = reg_file_;
 
-	vlog_inst(rs->fu_type, &rs->dest, rs->src, "SU");
 	if (rs->dest.index >= 0) {
 		struct int_register *reg = &reg_file[rs->dest.index];
 		if (rs->dest.tag == reg->tag)
@@ -65,11 +43,13 @@ update_reg_file(void *rs_, void *reg_file_)
 void
 state_update(struct int_register *reg_file)
 {
-	deque_foreach(su_state.queue, update_reg_file, reg_file);
-	deque_foreach(su_state.queue, update_sched_queue, NULL);
-	while (!deque_is_empty(su_state.queue)) {
-		deque_delete_first(su_state.queue);
-		su_state.cdb_use_count--;
+	for (int i = 0; i < su_state.cdb_total_count; ++i) {
+		struct reservation_station *rs = exe_retire_inst();
+		if (!rs)
+			return;
+		vlog_inst(rs->fu_type, &rs->dest, rs->src, "SU");
+		update_reg_file(rs, reg_file);
+		update_sched_queue(rs);
 	}
 }
 

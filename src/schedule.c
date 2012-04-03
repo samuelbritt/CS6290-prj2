@@ -136,7 +136,7 @@ sched_delete_rs(struct reservation_station *rs)
 bool
 sched_queue_is_empty()
 {
-	return deque_is_empty(sched_queue);
+	return deque_is_empty(sched_queue) && deque_is_empty(unsched_queue);
 }
 
 void
