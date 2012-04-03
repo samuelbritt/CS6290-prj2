@@ -137,7 +137,7 @@ process_args(int argc, char *const argv[], struct options *opt)
 	}
 
 	if (opt->max_cycles)
-		vlog("Will run at most %d cycles.", opt->max_cycles);
+		vlog("Will run at most %d cycles.\n", opt->max_cycles);
 	free(arg0);
 }
 
