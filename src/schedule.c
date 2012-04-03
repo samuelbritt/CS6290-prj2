@@ -5,7 +5,13 @@
 
 #include "deque.h"
 
+/* Maintain both the official scheduling queue, and a queue to hold
+ * instructions coming in from DISP that have yet to be scheduled. Moving
+ * instructions from the temporary unscheduled queue to the scheduling queue
+ * during the SCHED pipeline stage ensures that all instructions spend at least
+ * one cycle in SCHED. */
 static deque_t *sched_queue;
+static deque_t *unsched_queue;
 
 static void
 update_rs_from_cdb(void *rs_, void *cdb_)
@@ -56,10 +62,21 @@ schedule_inst(void *rs_, void *arg)
 		rs->fired = true;
 }
 
+static void
+tranfer_unsched_to_sched()
+{
+	struct reservation_station *unsched_rs;
+	while (!deque_is_empty(unsched_queue)) {
+		unsched_rs = deque_delete_first(unsched_queue);
+		deque_append(sched_queue, unsched_rs);
+	}
+}
+
 /* Schedules instructions to be run */
 void
 schedule()
 {
+	tranfer_unsched_to_sched();
 	deque_foreach(sched_queue, &schedule_inst, NULL);
 }
 
@@ -68,7 +85,7 @@ struct reservation_station *
 sched_add_rs()
 {
 	struct reservation_station *rs = ecalloc(sizeof(*rs));
-	deque_append(sched_queue, rs);
+	deque_append(unsched_queue, rs);
 	return rs;
 }
 
@@ -94,4 +111,5 @@ void
 sched_init()
 {
 	sched_queue = deque_create();
+	unsched_queue = deque_create();
 }
