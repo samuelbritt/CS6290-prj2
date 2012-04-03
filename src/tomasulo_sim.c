@@ -31,13 +31,12 @@ tomasulo_sim(const struct options * const opt)
 	disp_init();
 	sched_init();
 	exe_init(opt->fu0_count, opt->fu1_count, opt->fu2_count);
-	su_init(opt->cdb_count);
 
 	int instructions_fetched = 0;
 	int clock = 0;
 	do {
 		vlog("Cycle %d\n", clock++);
-		state_update(reg_file);
+		state_update(opt->cdb_count, reg_file);
 		execute();
 		schedule();
 		dispatch(reg_file);
@@ -69,6 +68,5 @@ tomasulo_sim(const struct options * const opt)
 	disp_destroy();
 	sched_destroy();
 	exe_destroy();
-	su_destroy();
 	return ret;
 }
