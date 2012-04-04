@@ -5,12 +5,13 @@
 #include <deque.c>
 
 /* utils */
-static void print_int(void *i, void *str)
+static int print_int(void *i, void *str)
 {
 	char *s1 = str;
 	char s2[1024];
 	sprintf(s2, "%d -> ", *(int *) i);
 	strcat(s1, s2);
+	return DEQUE_CONTINUE;
 }
 
 /* Tests */
