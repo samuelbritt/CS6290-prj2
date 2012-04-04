@@ -1,6 +1,8 @@
 #ifndef TOMASULO_SIM_H_
 #define TOMASULO_SIM_H_
 
+#include <stdio.h>
+
 /* Number of instructions to fetch each cycle */
 #define DEFAULT_FETCH_RATE 1
 

@@ -1,18 +1,20 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
-
-#include "deque.h"
-
 #include "tomasulo_sim.h"
+
 #include "fetch.h"
 #include "dispatch.h"
 #include "schedule.h"
 #include "execute.h"
 #include "state_update.h"
-#include "common.h"
 #include "logger.h"
+#include "stats.h"
+#include "common.h"
+
+#include "deque.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
 
 /* Runs the actual tomasulo pipeline*/
 int
