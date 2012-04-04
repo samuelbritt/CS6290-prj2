@@ -65,6 +65,7 @@ struct instruction {
 
 struct reservation_station {
 	bool fired;       /* so we don't re-schedule instructions */
+	bool ready_to_fire;
 	int fu_type;
 	struct int_register dest;
 	struct int_register src[SRC_REGISTER_COUNT];

@@ -1,17 +1,10 @@
 #include "schedule.h"
-#include "execute.h"
 #include "common.h"
 #include "logger.h"
 
 #include "deque.h"
 
-/* Maintain both the official scheduling queue, and a queue to hold
- * instructions coming in from DISP that have yet to be scheduled. Moving
- * instructions from the temporary unscheduled queue to the scheduling queue
- * during the SCHED pipeline stage ensures that all instructions spend at least
- * one cycle in SCHED. */
 static deque_t *sched_queue;
-static deque_t *unsched_queue;
 
 static int
 update_rs_from_cdb(void *rs_, void *cdb_)
@@ -48,12 +41,6 @@ all_sources_ready(struct reservation_station *rs)
 	return ready;
 }
 
-static bool
-is_eligible_for_execution(struct reservation_station *rs)
-{
-	return !rs->fired && all_sources_ready(rs);
-}
-
 /* Struct used as both input and output argument for find_eligible_rs(). */
 struct find_executable_rs_arg {
 	int fu_type;
@@ -69,7 +56,7 @@ find_executable_rs(void *rs_, void *arg_)
 {
 	struct reservation_station *rs = rs_;
 	struct find_executable_rs_arg *arg = arg_;
-	if (is_eligible_for_execution(rs) && rs->fu_type == arg->fu_type) {
+	if (!rs->fired && rs->ready_to_fire && rs->fu_type == arg->fu_type) {
 		rs->fired = true;
 		arg->executable_rs = rs;
 		return DEQUE_STOP;
@@ -92,30 +79,22 @@ sched_wakeup(int fu_type)
 /* schedule logic for a single reservation station. Designed to be called
  * from deque_foreach() */
 static int
-print_inst(void *rs_, void *arg)
+sched_inst(void *rs_, void *arg)
 {
 	struct reservation_station *rs = rs_;
-	if (!rs->fired)
+	if (!rs->fired) {
 		vlog_inst(rs->fu_type, &rs->dest, rs->src, "SCHED");
-	return DEQUE_CONTINUE;
-}
-
-static void
-tranfer_unsched_to_sched()
-{
-	struct reservation_station *unsched_rs;
-	while (!deque_is_empty(unsched_queue)) {
-		unsched_rs = deque_delete_first(unsched_queue);
-		deque_append(sched_queue, unsched_rs);
+		rs->ready_to_fire = all_sources_ready(rs);
 	}
+	return DEQUE_CONTINUE;
 }
 
 /* Schedules instructions to be run */
 void
 schedule()
 {
-	tranfer_unsched_to_sched();
-	deque_foreach(sched_queue, &print_inst, NULL);
+	/* tranfer_unsched_to_sched(); */
+	deque_foreach(sched_queue, &sched_inst, NULL);
 }
 
 /* Wrapper functions for deque */
@@ -123,7 +102,8 @@ struct reservation_station *
 sched_add_rs()
 {
 	struct reservation_station *rs = ecalloc(sizeof(*rs));
-	deque_append(unsched_queue, rs);
+	rs->ready_to_fire = false;
+	deque_append(sched_queue, rs);
 	return rs;
 }
 
@@ -136,7 +116,7 @@ sched_delete_rs(struct reservation_station *rs)
 bool
 sched_queue_is_empty()
 {
-	return deque_is_empty(sched_queue) && deque_is_empty(unsched_queue);
+	return deque_is_empty(sched_queue);
 }
 
 void
@@ -149,5 +129,4 @@ void
 sched_init()
 {
 	sched_queue = deque_create();
-	unsched_queue = deque_create();
 }
