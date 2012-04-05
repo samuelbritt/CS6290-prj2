@@ -42,4 +42,7 @@ clean:
 		$(MAKE) -C $(TESTDIR) clean; \
 	fi
 
-.PHONY: all clean
+dist:
+	git arch britt_cs6290_prj2
+
+.PHONY: all clean dist
