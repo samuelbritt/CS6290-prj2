@@ -7,6 +7,7 @@
 static deque_t *sched_queue;
 
 static int fired_instruction_count = 0;
+static int retired_instruction_count = 0;
 
 static int
 update_rs_from_cdb(void *rs_, void *cdb_)
@@ -81,9 +82,27 @@ sched_wakeup(int fu_type)
 }
 
 int
-sched_get_fired_instruction_count()
+sched_fired_instruction_counter()
 {
 	return fired_instruction_count;
+}
+
+void
+sched_fired_instruction_counter_clear()
+{
+	fired_instruction_count = 0;
+}
+
+int
+sched_retired_instruction_counter()
+{
+	return retired_instruction_count;
+}
+
+void
+sched_retired_instruction_counter_clear()
+{
+	retired_instruction_count = 0;
 }
 
 /* schedule logic for a single reservation station. Designed to be called
@@ -120,13 +139,21 @@ sched_add_rs()
 void
 sched_delete_rs(struct reservation_station *rs)
 {
+	retired_instruction_count++;
 	rs = deque_delete(sched_queue, rs);
 	free(rs);
 }
+
 bool
 sched_queue_is_empty()
 {
 	return deque_is_empty(sched_queue);
+}
+
+int
+sched_queue_current_size()
+{
+	return deque_length(sched_queue);
 }
 
 void

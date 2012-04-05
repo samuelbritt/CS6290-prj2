@@ -31,6 +31,14 @@ static inline void *ecalloc(size_t size)
 	return p;
 }
 
+static inline void *erealloc(void *p, size_t size)
+{
+	p = realloc(p, size);
+	if (!p)
+		fail("Memory error");
+	return p;
+}
+
 /* Defines and Data structures used by several modules */
 
 /* Max number of source registers for any instruction */

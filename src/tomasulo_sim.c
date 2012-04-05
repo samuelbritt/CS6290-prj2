@@ -35,7 +35,6 @@ tomasulo_sim(const struct options * const opt)
 	exe_init(opt->fu0_count, opt->fu1_count, opt->fu2_count);
 	stats_init();
 
-	int instructions_fetched = 0;
 	int clock = 0;
 	do {
 		vlog("Cycle %d\n", clock);
@@ -43,8 +42,7 @@ tomasulo_sim(const struct options * const opt)
 		execute();
 		schedule();
 		dispatch(reg_file);
-		instructions_fetched += instruction_fetch(opt->trace_file,
-							  opt->fetch_rate);
+		instruction_fetch(opt->trace_file, opt->fetch_rate);
 		stats_update(clock++);
 		vlog_flush();
 		vlog("\n");
@@ -66,9 +64,13 @@ tomasulo_sim(const struct options * const opt)
 	printf("k2_FUs: %d\n", opt->fu2_count);
 	printf("\n");
 	printf("Cycles: %d\n", clock);
-	printf("Instructions: %d\n", instructions_fetched);
 	printf("Instructions: %d\n", stats_inst_fetched());
 	printf("Insn Fired (avg): %g\n", stats_inst_fired_avg());
+	printf("Insn Fired (sdev): %g\n", stats_inst_fired_std_dev());
+	printf("IPC (avg): %g\n", stats_ipc_avg());
+	printf("IPC (sdev): %g\n", stats_ipc_std_dev());
+	printf("SchedQ Size (avg): %g\n", stats_sched_queue_size_avg());
+	printf("SchedQ Size (max): %d\n", stats_sched_queue_size_max());
 
 	vlog_destroy();
 	disp_destroy();

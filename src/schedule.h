@@ -21,8 +21,12 @@ struct reservation_station * sched_wakeup(int fu_type);
  * registers if the tags match */
 void sched_broadcast_cdb(struct cdb *cdb);
 
-/* returns the total number of instructions fired so far */
-int sched_get_fired_instruction_count();
+/* Keep running counters of instructions fired ard and instructions retired.
+ * These counters can be reset to 0 using the respective *_clear() functions. */
+int sched_fired_instruction_counter();
+int sched_retired_instruction_counter();
+void sched_fired_instruction_counter_clear();
+void sched_retired_instruction_counter_clear();
 
 /* Manipulates the internal scheduling queue */
 void sched_init(); /* Must be called before any other function */
@@ -30,5 +34,6 @@ void sched_destroy();
 struct reservation_station * sched_add_rs();
 void sched_delete_rs(struct reservation_station *rs);
 bool sched_queue_is_empty();
+int sched_queue_current_size();
 
 #endif /* end of include guard: SCHEDULE_H_ */
