@@ -22,4 +22,4 @@ $(TGT): $(OBJ)
 -include $(DEP)
 
 clean:
-	@rm -f $(OBJ) $(TGT)
+	@rm -f $(OBJ) $(TGT) $(DEP)
