@@ -33,17 +33,19 @@ tomasulo_sim(const struct options * const opt)
 	disp_init();
 	sched_init();
 	exe_init(opt->fu0_count, opt->fu1_count, opt->fu2_count);
+	stats_init();
 
 	int instructions_fetched = 0;
 	int clock = 0;
 	do {
-		vlog("Cycle %d\n", clock++);
+		vlog("Cycle %d\n", clock);
 		state_update(opt->cdb_count, reg_file);
 		execute();
 		schedule();
 		dispatch(reg_file);
 		instructions_fetched += instruction_fetch(opt->trace_file,
 							  opt->fetch_rate);
+		stats_update(clock++);
 		vlog_flush();
 		vlog("\n");
 	} while (((!opt->max_cycles || clock < opt->max_cycles)) &&
@@ -65,10 +67,13 @@ tomasulo_sim(const struct options * const opt)
 	printf("\n");
 	printf("Cycles: %d\n", clock);
 	printf("Instructions: %d\n", instructions_fetched);
+	printf("Instructions: %d\n", stats_inst_fetched());
+	printf("Insn Fired (avg): %g\n", stats_inst_fired_avg());
 
 	vlog_destroy();
 	disp_destroy();
 	sched_destroy();
 	exe_destroy();
+	stats_destroy();
 	return ret;
 }

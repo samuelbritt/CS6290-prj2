@@ -6,6 +6,8 @@
 
 static deque_t *sched_queue;
 
+static int fired_instruction_count = 0;
+
 static int
 update_rs_from_cdb(void *rs_, void *cdb_)
 {
@@ -73,7 +75,15 @@ sched_wakeup(int fu_type)
 	arg.fu_type = fu_type;
 	arg.executable_rs = NULL;
 	deque_foreach(sched_queue, find_executable_rs, &arg);
+	if (arg.executable_rs)
+		fired_instruction_count++;
 	return arg.executable_rs;
+}
+
+int
+sched_get_fired_instruction_count()
+{
+	return fired_instruction_count;
 }
 
 /* schedule logic for a single reservation station. Designed to be called
