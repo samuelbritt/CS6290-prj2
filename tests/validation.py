@@ -21,21 +21,21 @@ import subprocess
 
 # Usage: tomalulo_sim [-v] <fetch-rate> <k0> <k1> <k2> <cdb-count> <trace_file>
 validation_runs = {
-    "barnes1.txt": {'opts': (4, 2, 2, 2, 2), 'verbose':  False, 'trace': "barnes.txt"}, 
-    "barnes2.txt": {'opts': (4, 3, 3, 3, 4), 'verbose':  False, 'trace': "barnes.txt"}, 
-    "gcc1.txt"   : {'opts': (8, 3, 3, 3, 2), 'verbose':  False, 'trace': "gcc.txt"}, 
-    "gcc2.txt"   : {'opts': (8, 3, 3, 3, 8), 'verbose':  False, 'trace': "gcc.txt"}, 
-    "ocean1.txt" : {'opts': (4, 2, 2, 2, 4), 'verbose':  False, 'trace': "ocean.txt"}, 
-    "perl1.txt"  : {'opts': (1, 1, 1, 1, 1), 'verbose':  False, 'trace': "perl.txt"}, 
-    "test1_1.txt": {'opts': (4, 2, 2, 2, 2), 'verbose':  True,  'trace': "test1.txt"}, 
-    "test1_2.txt": {'opts': (4, 2, 2, 2, 1), 'verbose':  True,  'trace': "test1.txt"}, 
-    "test2_1.txt": {'opts': (4, 2, 2, 2, 2), 'verbose':  True,  'trace': "test2.txt"}, 
-    "test2_2.txt": {'opts': (4, 2, 2, 2, 1), 'verbose':  True,  'trace': "test2.txt"}, 
-    "test3_1.txt": {'opts': (4, 2, 2, 2, 2), 'verbose':  True,  'trace': "test3.txt"}, 
-    "test3_2.txt": {'opts': (4, 2, 2, 2, 1), 'verbose':  True,  'trace': "test3.txt"}, 
-    "test4_1.txt": {'opts': (4, 2, 2, 2, 2), 'verbose':  True,  'trace': "test4.txt"}, 
-    "test4_2.txt": {'opts': (4, 2, 2, 2, 1), 'verbose':  True,  'trace': "test4.txt"}, 
-    "barnes-big.txt": {'opts': (4, 3, 3, 3, 4), 'verbose':  True, 'trace': "barnes.txt"}, 
+    "barnes1.txt": {'opts': (4, 2, 2, 2, 2), 'verbose':  False, 'trace': "barnes.txt"},
+    "barnes2.txt": {'opts': (4, 3, 3, 3, 4), 'verbose':  False, 'trace': "barnes.txt"},
+    "gcc1.txt"   : {'opts': (8, 3, 3, 3, 2), 'verbose':  False, 'trace': "gcc.txt"},
+    "gcc2.txt"   : {'opts': (8, 3, 3, 3, 8), 'verbose':  False, 'trace': "gcc.txt"},
+    "ocean1.txt" : {'opts': (4, 2, 2, 2, 4), 'verbose':  False, 'trace': "ocean.txt"},
+    "perl1.txt"  : {'opts': (1, 1, 1, 1, 1), 'verbose':  False, 'trace': "perl.txt"},
+    "test1_1.txt": {'opts': (4, 2, 2, 2, 2), 'verbose':  True,  'trace': "test1.txt"},
+    "test1_2.txt": {'opts': (4, 2, 2, 2, 1), 'verbose':  True,  'trace': "test1.txt"},
+    "test2_1.txt": {'opts': (4, 2, 2, 2, 2), 'verbose':  True,  'trace': "test2.txt"},
+    "test2_2.txt": {'opts': (4, 2, 2, 2, 1), 'verbose':  True,  'trace': "test2.txt"},
+    "test3_1.txt": {'opts': (4, 2, 2, 2, 2), 'verbose':  True,  'trace': "test3.txt"},
+    "test3_2.txt": {'opts': (4, 2, 2, 2, 1), 'verbose':  True,  'trace': "test3.txt"},
+    "test4_1.txt": {'opts': (4, 2, 2, 2, 2), 'verbose':  True,  'trace': "test4.txt"},
+    "test4_2.txt": {'opts': (4, 2, 2, 2, 1), 'verbose':  True,  'trace': "test4.txt"},
+    "barnes-big.txt": {'opts': (4, 3, 3, 3, 4), 'verbose':  True, 'trace': "barnes.txt"},
 }
 
 traces_dir = "traces"
@@ -47,7 +47,7 @@ def run_cmd(validation_file):
     run = validation_runs[validation_file]
     cmd = prog + " " + " ".join(str(opt) for opt in run['opts'])
     if run['verbose']:
-        cmd += " -v" 
+        cmd += " -v"
     cmd += " " + os.path.join(traces_dir, run['trace'])
     return cmd
 

@@ -1,5 +1,5 @@
 ---- Sim Finished ----
-Trace Filename: ./traces/barnes.txt
+Trace Filename: traces/barnes.txt
 Fetch Rate: 4
 Result Buses: 2
 k0_FUs: 2
