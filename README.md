@@ -14,8 +14,13 @@ Tomasulo Algorithm
 
 ####SYNOPSIS:
 
-    tomalulo_sim [-v] <fetch-rate> <k0> <k1> <k2> <cdb-count> <trace_file>
-    tomalulo_sim [-v] [-n <fetch-rate>] [--k0=<count>] [--k1=<count>] [--k2=<count>] [-c <count>] <trace_file>
+    tomalulo_sim [-v] [-m <max-cycles]
+            <fetch-rate> <k0> <k1> <k2> <cdb-count> <trace_file>
+
+    tomalulo_sim [-v] [-m <max-cycles]
+            [-n <fetch-rate>] [--k0=<count>] [--k1=<count>]
+            [--k2=<count>] [-c <count>] <trace_file>
+
     tomalulo_sim --help
 
 ####DESCRIPTION:
@@ -71,5 +76,5 @@ Tomasulo Algorithm
 
   - `-c <value>`, `--cdb=<value>`
 
-      Set the number of common data busses for the simulation.
+      Set the number of common data buses for the simulation.
       Defaults to 1.
