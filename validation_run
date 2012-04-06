@@ -1,0 +1,270 @@
+
+barnes-big.txt:
+---- Sim Finished ----
+Trace Filename: traces/barnes.txt
+Fetch Rate: 4
+Result Buses: 4
+k0_FUs: 3
+k1_FUs: 3
+k2_FUs: 3
+
+Cycles: 2669
+Instructions: 10000
+Insn Fired (avg): 3.74672
+Insn Fired (sdev): 1.12381
+IPC (avg): 3.74672
+IPC (sdev): 0.459192
+SchedQ Size (avg): 318.23
+SchedQ Size (max): 591
+
+barnes1.txt:
+---- Sim Finished ----
+Trace Filename: traces/barnes.txt
+Fetch Rate: 4
+Result Buses: 2
+k0_FUs: 2
+k1_FUs: 2
+k2_FUs: 2
+
+Cycles: 5005
+Instructions: 10000
+Insn Fired (avg): 1.998
+Insn Fired (sdev): 0.25754
+IPC (avg): 1.998
+IPC (sdev): 0.0599353
+SchedQ Size (avg): 2503.5
+SchedQ Size (max): 5006
+
+barnes2.txt:
+---- Sim Finished ----
+Trace Filename: traces/barnes.txt
+Fetch Rate: 4
+Result Buses: 4
+k0_FUs: 3
+k1_FUs: 3
+k2_FUs: 3
+
+Cycles: 2669
+Instructions: 10000
+Insn Fired (avg): 3.74672
+Insn Fired (sdev): 1.12381
+IPC (avg): 3.74672
+IPC (sdev): 0.459192
+SchedQ Size (avg): 318.23
+SchedQ Size (max): 591
+
+gcc1.txt:
+---- Sim Finished ----
+Trace Filename: traces/gcc.txt
+Fetch Rate: 8
+Result Buses: 2
+k0_FUs: 3
+k1_FUs: 3
+k2_FUs: 3
+
+Cycles: 5010
+Instructions: 10000
+Insn Fired (avg): 1.99601
+Insn Fired (sdev): 0.181981
+IPC (avg): 1.99601
+IPC (sdev): 0.0798161
+SchedQ Size (avg): 3750.5
+SchedQ Size (max): 7508
+
+gcc2.txt:
+---- Sim Finished ----
+Trace Filename: traces/gcc.txt
+Fetch Rate: 8
+Result Buses: 8
+k0_FUs: 3
+k1_FUs: 3
+k2_FUs: 3
+
+Cycles: 2362
+Instructions: 10000
+Insn Fired (avg): 4.2337
+Insn Fired (sdev): 1.45421
+IPC (avg): 4.2337
+IPC (sdev): 1.45129
+SchedQ Size (avg): 2242.12
+SchedQ Size (max): 4421
+
+ocean1.txt:
+---- Sim Finished ----
+Trace Filename: traces/ocean.txt
+Fetch Rate: 4
+Result Buses: 4
+k0_FUs: 2
+k1_FUs: 2
+k2_FUs: 2
+
+Cycles: 4495
+Instructions: 10000
+Insn Fired (avg): 2.22469
+Insn Fired (sdev): 0.427899
+IPC (avg): 2.22469
+IPC (sdev): 0.429456
+SchedQ Size (avg): 2211.64
+SchedQ Size (max): 4431
+
+perl1.txt:
+---- Sim Finished ----
+Trace Filename: traces/perl.txt
+Fetch Rate: 1
+Result Buses: 1
+k0_FUs: 1
+k1_FUs: 1
+k2_FUs: 1
+
+Cycles: 10028
+Instructions: 10000
+Insn Fired (avg): 0.997208
+Insn Fired (sdev): 0.564353
+IPC (avg): 0.997208
+IPC (sdev): 0.0527657
+SchedQ Size (avg): 21.3251
+SchedQ Size (max): 27
+
+test1_1.txt:
+---- Sim Finished ----
+Trace Filename: traces/test1.txt
+Fetch Rate: 4
+Result Buses: 2
+k0_FUs: 2
+k1_FUs: 2
+k2_FUs: 2
+
+Cycles: 12
+Instructions: 4
+Insn Fired (avg): 0.333333
+Insn Fired (sdev): 0.62361
+IPC (avg): 0.333333
+IPC (sdev): 0.471404
+SchedQ Size (avg): 2.33333
+SchedQ Size (max): 4
+
+test1_2.txt:
+---- Sim Finished ----
+Trace Filename: traces/test1.txt
+Fetch Rate: 4
+Result Buses: 1
+k0_FUs: 2
+k1_FUs: 2
+k2_FUs: 2
+
+Cycles: 12
+Instructions: 4
+Insn Fired (avg): 0.333333
+Insn Fired (sdev): 0.62361
+IPC (avg): 0.333333
+IPC (sdev): 0.471404
+SchedQ Size (avg): 2.33333
+SchedQ Size (max): 4
+
+test2_1.txt:
+---- Sim Finished ----
+Trace Filename: traces/test2.txt
+Fetch Rate: 4
+Result Buses: 2
+k0_FUs: 2
+k1_FUs: 2
+k2_FUs: 2
+
+Cycles: 6
+Instructions: 4
+Insn Fired (avg): 0.666667
+Insn Fired (sdev): 0.942809
+IPC (avg): 0.666667
+IPC (sdev): 0.942809
+SchedQ Size (avg): 2.33333
+SchedQ Size (max): 4
+
+test2_2.txt:
+---- Sim Finished ----
+Trace Filename: traces/test2.txt
+Fetch Rate: 4
+Result Buses: 1
+k0_FUs: 2
+k1_FUs: 2
+k2_FUs: 2
+
+Cycles: 8
+Instructions: 4
+Insn Fired (avg): 0.5
+Insn Fired (sdev): 0.707107
+IPC (avg): 0.5
+IPC (sdev): 0.5
+SchedQ Size (avg): 2.25
+SchedQ Size (max): 4
+
+test3_1.txt:
+---- Sim Finished ----
+Trace Filename: traces/test3.txt
+Fetch Rate: 4
+Result Buses: 2
+k0_FUs: 2
+k1_FUs: 2
+k2_FUs: 2
+
+Cycles: 8
+Instructions: 4
+Insn Fired (avg): 0.5
+Insn Fired (sdev): 0.866025
+IPC (avg): 0.5
+IPC (sdev): 0.866025
+SchedQ Size (avg): 2.75
+SchedQ Size (max): 4
+
+test3_2.txt:
+---- Sim Finished ----
+Trace Filename: traces/test3.txt
+Fetch Rate: 4
+Result Buses: 1
+k0_FUs: 2
+k1_FUs: 2
+k2_FUs: 2
+
+Cycles: 10
+Instructions: 4
+Insn Fired (avg): 0.4
+Insn Fired (sdev): 0.8
+IPC (avg): 0.4
+IPC (sdev): 0.489898
+SchedQ Size (avg): 2.6
+SchedQ Size (max): 4
+
+test4_1.txt:
+---- Sim Finished ----
+Trace Filename: traces/test4.txt
+Fetch Rate: 4
+Result Buses: 2
+k0_FUs: 2
+k1_FUs: 2
+k2_FUs: 2
+
+Cycles: 16
+Instructions: 12
+Insn Fired (avg): 0.75
+Insn Fired (sdev): 0.661438
+IPC (avg): 0.75
+IPC (sdev): 0.559017
+SchedQ Size (avg): 5.4375
+SchedQ Size (max): 12
+
+test4_2.txt:
+---- Sim Finished ----
+Trace Filename: traces/test4.txt
+Fetch Rate: 4
+Result Buses: 1
+k0_FUs: 2
+k1_FUs: 2
+k2_FUs: 2
+
+Cycles: 20
+Instructions: 12
+Insn Fired (avg): 0.6
+Insn Fired (sdev): 0.583095
+IPC (avg): 0.6
+IPC (sdev): 0.489898
+SchedQ Size (avg): 4.85
+SchedQ Size (max): 12

@@ -1,0 +1,132 @@
+
+barnes-big.txt:
+--- /home/sam/src/CS_6290/prj2/tests/validation/barnes-big.txt	2012-04-01 21:57:23.000000000 -0400
++++ -	2012-04-06 14:34:53.057102467 -0400
+@@ -874704,6 +874704,6 @@
+ Insn Fired (avg): 3.74672
+ Insn Fired (sdev): 1.12381
+ IPC (avg): 3.74672
+-IPC (sdev): 0.459194
++IPC (sdev): 0.459192
+ SchedQ Size (avg): 318.23
+ SchedQ Size (max): 591
+
+barnes1.txt:
+--- /home/sam/src/CS_6290/prj2/tests/validation/barnes1.txt	2012-04-05 13:18:43.251474143 -0400
++++ -	2012-04-06 14:34:56.003880962 -0400
+@@ -9,8 +9,8 @@
+ Cycles: 5005
+ Instructions: 10000
+ Insn Fired (avg): 1.998
+-Insn Fired (sdev): 0.257545
++Insn Fired (sdev): 0.25754
+ IPC (avg): 1.998
+-IPC (sdev): 0.0599367
++IPC (sdev): 0.0599353
+ SchedQ Size (avg): 2503.5
+ SchedQ Size (max): 5006
+
+barnes2.txt:
+--- /home/sam/src/CS_6290/prj2/tests/validation/barnes2.txt	2012-04-05 13:19:01.023562276 -0400
++++ -	2012-04-06 14:34:56.508788255 -0400
+@@ -11,6 +11,6 @@
+ Insn Fired (avg): 3.74672
+ Insn Fired (sdev): 1.12381
+ IPC (avg): 3.74672
+-IPC (sdev): 0.459194
++IPC (sdev): 0.459192
+ SchedQ Size (avg): 318.23
+ SchedQ Size (max): 591
+
+gcc1.txt:
+--- /home/sam/src/CS_6290/prj2/tests/validation/gcc1.txt	2012-04-02 15:04:16.924653217 -0400
++++ -	2012-04-06 14:34:56.600549717 -0400
+@@ -9,8 +9,8 @@
+ Cycles: 5010
+ Instructions: 10000
+ Insn Fired (avg): 1.99601
+-Insn Fired (sdev): 0.181983
++Insn Fired (sdev): 0.181981
+ IPC (avg): 1.99601
+-IPC (sdev): 0.0798204
++IPC (sdev): 0.0798161
+ SchedQ Size (avg): 3750.5
+ SchedQ Size (max): 7508
+
+gcc2.txt:
+--- /home/sam/src/CS_6290/prj2/tests/validation/gcc2.txt	2012-04-02 15:04:16.924653217 -0400
++++ -	2012-04-06 14:34:57.274665816 -0400
+@@ -11,6 +11,6 @@
+ Insn Fired (avg): 4.2337
+ Insn Fired (sdev): 1.45421
+ IPC (avg): 4.2337
+-IPC (sdev): 1.4513
++IPC (sdev): 1.45129
+ SchedQ Size (avg): 2242.12
+ SchedQ Size (max): 4421
+
+ocean1.txt:
+--- /home/sam/src/CS_6290/prj2/tests/validation/ocean1.txt	2012-04-02 15:04:16.924653217 -0400
++++ -	2012-04-06 14:34:57.813852886 -0400
+@@ -9,8 +9,8 @@
+ Cycles: 4495
+ Instructions: 10000
+ Insn Fired (avg): 2.22469
+-Insn Fired (sdev): 0.427908
++Insn Fired (sdev): 0.427899
+ IPC (avg): 2.22469
+-IPC (sdev): 0.429465
++IPC (sdev): 0.429456
+ SchedQ Size (avg): 2211.64
+ SchedQ Size (max): 4431
+
+perl1.txt:
+--- /home/sam/src/CS_6290/prj2/tests/validation/perl1.txt	2012-04-02 15:04:16.924653217 -0400
++++ -	2012-04-06 14:34:58.489555644 -0400
+@@ -9,8 +9,8 @@
+ Cycles: 10028
+ Instructions: 10000
+ Insn Fired (avg): 0.997208
+-Insn Fired (sdev): 0.564358
++Insn Fired (sdev): 0.564353
+ IPC (avg): 0.997208
+-IPC (sdev): 0.0527673
++IPC (sdev): 0.0527657
+ SchedQ Size (avg): 21.3251
+ SchedQ Size (max): 27
+
+test1_1.txt:
+--- /home/sam/src/CS_6290/prj2/tests/validation/test1_1.txt	2012-04-02 15:04:16.924653217 -0400
++++ -	2012-04-06 14:34:58.517361834 -0400
+@@ -71,6 +71,6 @@
+ Insn Fired (avg): 0.333333
+ Insn Fired (sdev): 0.62361
+ IPC (avg): 0.333333
+-IPC (sdev): 0.471405
++IPC (sdev): 0.471404
+ SchedQ Size (avg): 2.33333
+ SchedQ Size (max): 4
+
+test1_2.txt:
+--- /home/sam/src/CS_6290/prj2/tests/validation/test1_2.txt	2012-04-02 15:04:16.924653217 -0400
++++ -	2012-04-06 14:34:58.520612664 -0400
+@@ -71,6 +71,6 @@
+ Insn Fired (avg): 0.333333
+ Insn Fired (sdev): 0.62361
+ IPC (avg): 0.333333
+-IPC (sdev): 0.471405
++IPC (sdev): 0.471404
+ SchedQ Size (avg): 2.33333
+ SchedQ Size (max): 4
+
+test2_1.txt:
+
+test2_2.txt:
+
+test3_1.txt:
+
+test3_2.txt:
+
+test4_1.txt:
+
+test4_2.txt:
