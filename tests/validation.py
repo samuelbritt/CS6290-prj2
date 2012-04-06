@@ -83,8 +83,8 @@ def run_validation_files(cmd_formatter, files, quiet=False):
         print
         print r + ":"
         sys.stdout.flush()
-        c = cmd_formatter(r, quiet)
-        subprocess.call(c, shell=True)
+        cmd = cmd_formatter(r, quiet)
+        subprocess.call(cmd, shell=True)
 
 def get_short_runs():
     return [r for r in validation_runs if "big" not in r]
