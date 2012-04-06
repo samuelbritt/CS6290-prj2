@@ -64,7 +64,7 @@ valid_dir  = os.path.join(script_dir, "validation")
 prog       = os.path.join(root_dir, "tomasulo_sim")
 diff       = "diff -u"
 
-def run_cmd(validation_file, quiet=False):
+def format_run_cmd(validation_file, quiet=False):
     run = validation_runs[validation_file]
     cmd = prog + " " + " ".join(str(opt) for opt in run['opts'])
     if run['verbose'] and not quiet:
@@ -73,17 +73,17 @@ def run_cmd(validation_file, quiet=False):
     cmd += " " + os.path.join(relative_path, run['trace'])
     return cmd
 
-def diff_cmd(validation_file, quiet):
-    cmd = run_cmd(validation_file, quiet)
+def format_diff_cmd(validation_file, quiet):
+    cmd = format_run_cmd(validation_file, quiet)
     cmd += " | {} {} -".format(diff, os.path.join(valid_dir, validation_file))
     return cmd
 
-def run_validation_files(cmd_func, files, quiet=False):
+def run_validation_files(cmd_formatter, files, quiet=False):
     for r in files:
         print
         print r + ":"
         sys.stdout.flush()
-        c = cmd_func(r, quiet)
+        c = cmd_formatter(r, quiet)
         subprocess.call(c, shell=True)
 
 def get_short_runs():
@@ -112,13 +112,13 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
 
-    cmd_func = run_cmd
+    cmd_formatter = format_run_cmd
     if args.diff:
-        cmd_func = diff_cmd
+        cmd_formatter = format_diff_cmd
 
     if args.validation_file:
         run_name = valid_run_name_or_exit(args.validation_file)
         runs = [run_name]
     else:
         runs = sorted(validation_runs.keys())
-    run_validation_files(cmd_func, runs, args.quiet)
+    run_validation_files(cmd_formatter, runs, args.quiet)
