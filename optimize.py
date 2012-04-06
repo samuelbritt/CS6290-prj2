@@ -11,62 +11,157 @@ script_dir = os.path.abspath(os.path.dirname(sys.argv[0]))
 root_dir   = script_dir
 prog       = os.path.join(root_dir, "tomasulo_sim")
 
-def format_cmd(args):
-    cmd = ("{prog} --fetch-rate={rate} --cdb={cdbs} "
-           "--k0={k0} --k1={k1} --k2={k2} {tracefile}".format(
-               prog=prog, rate=args.fetch_rate, cdbs=args.cdb_count,
-               k0=args.k0, k1=args.k1, k2=args.k2,
-               tracefile=args.tracefile
-           ))
-    return cmd
+class SimParams(object):
+    def __init__(self, **kwargs):
+        self.fetch_rate = 0
+        self.k0 = 0
+        self.k1 = 0
+        self.k2 = 0
+        self._cdbs = 0
+        for key in kwargs:
+            setattr(self, key, kwargs[key])
+        fu_count = sum((self.k0, self.k1, self.k2))
 
-def run_cmd(cmd):
-    """ returns a file containing the commands output to stdout """
-    out = tempfile.TemporaryFile()
-    subprocess.call(cmd, stdout=out, shell=True)
-    out.seek(0)
-    return out
+    @property
+    def cdbs(self):
+        return min((self._cdbs, self.fu_count()))
+    @cdbs.setter
+    def cdbs(self, val):
+        self._cdbs = val
 
-def find_ipc_from_stats_output(stats_file):
-    ipc = 0 
-    for line in stats_file:
-        if line.startswith("IPC (avg)"):
-            ipc = float(line.split(":")[-1])
-    return ipc
+    @property
+    def hw(self):
+        return sum((self.cdbs, self.fu_count()))
+
+    def fu_count(self):
+        return sum((self.k0, self.k1, self.k2))
+
+    def format_cmd(self):
+        return ("--fetch-rate={rate} --cdb={cdbs} "
+                "--k0={k0} --k1={k1} --k2={k2}".format(
+                   rate=self.fetch_rate, cdbs=self.cdbs,
+                   k0=self.k0, k1=self.k1, k2=self.k2))
+
+    def __str__(self):
+        return ("fetch-rate: {rate}, cdbs: {cdbs}, "
+                "k0: {k0}, k1: {k1}, k2: {k2}".format(
+                    rate=self.fetch_rate, cdbs=self.cdbs,
+                    k0=self.k0, k1=self.k1, k2=self.k2))
+
+    def set_max(self):
+        self.fetch_rate = 8
+        self.cdbs = 6
+        self.k0 = 2
+        self.k1 = 2
+        self.k2 = 2
+
+    def copy(self):
+        p = SimParams()
+        p.__dict__ = dict(self.__dict__)
+        return p
+
+class Run(object):
+    def __init__(self, tracefile, **kwargs):
+        self.params = SimParams(**kwargs)
+        self.tracefile = tracefile
+        self.max_ipc = 0
+
+    @property
+    def hw(self):
+        return self.params.hw
+
+    def optimize(self):
+        print "Finding Maximum IPC..."
+        self.max_ipc = self.calculate_max_ipc()
+        min_hw = [self.max_ipc, self.params.copy()]
+        cutoff = 0.9 * self.max_ipc
+
+        print "Optimizing FUs..."
+        min_hw = self.optimize_fus(cutoff, min_hw)
+        print "Optimal FUs:"
+        print "ipc:", min_hw[0], min_hw[1]
+
+        print "Optimizing CDBs..."
+        min_hw = self.optimize_cdbs(cutoff, min_hw)
+
+        print "Final Results:"
+        print "ipc", min_hw[0], min_hw[1]
+
+    def optimize_fus(self, ipc_cutoff, min_params):
+        optimal_ipc = min_params[0]
+        optimal_params = min_params[1]
+        for k0 in (1,2):
+            self.params.k0 = k0
+            for k1 in (1,2):
+                self.params.k1 = k1
+                for k2 in (1,2):
+                    self.params.k2 = k2
+                    ipc = self.calculate_ipc()
+                    print "ipc:", ipc, self.params
+                    if ipc < ipc_cutoff:
+                        continue
+                    optimal_ipc, optimal_params = self.pick_best(ipc, self.params,
+                                                                 optimal_ipc,
+                                                                 optimal_params)
+                    optimal_params = optimal_params.copy()
+        return optimal_ipc, optimal_params
+
+    def optimize_cdbs(self, ipc_cutoff, min_hw):
+        optimal_ipc = min_hw[0]
+        optimal_params = min_hw[1]
+        self.params = optimal_params
+        for r in range(1, optimal_params.cdbs):
+            self.params.cdbs = r
+            ipc = self.calculate_ipc()
+            print "ipc:", ipc, self.params
+            if ipc > ipc_cutoff:
+                return ipc, self.params.copy()
 
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-n', '--fetch-rate', dest='fetch_rate', type=int,
-                        default=8, choices=(4,8), help="fetch rate")
-    parser.add_argument('--k0', dest='k0', type=int, default=2, choices=(1,2), help="k0")
-    parser.add_argument('--k1', dest='k1', type=int, default=2, choices=(1,2), help="k1")
-    parser.add_argument('--k2', dest='k2', type=int, default=2, choices=(1,2), help="k2")
-    parser.add_argument('-c', '--cdbs', dest='cdb_count', type=int,
-                        default=6, choices=xrange(1,7), help="cdbs")
-    parser.add_argument('tracefile', metavar='<tracefile>', help="Trace file")
-    args = parser.parse_args()
-    args.cdb_count = min(args.cdb_count, sum((args.k0, args.k1, args.k2)))
-    return args
+    def pick_best(self, ipc_a, params_a, ipc_b, params_b):
+        opt_ipc = ipc_a
+        opt_params = params_a
+        if (params_b.hw < opt_params.hw or
+            (params_b.hw == params_a.hw and
+             ipc_b > opt_ipc)):
+            opt_ipc = ipc_b
+            opt_params = params_b
+        return opt_ipc, opt_params
 
-def print_args(args):
-    return ("trace: {tracefile} fetch-rate: {rate}, cdbs: {cdbs}, "
-            "k0: {k0}, k1: {k1}, k2: {k2}".format(
-               tracefile=args.tracefile,
-               rate=args.fetch_rate, cdbs=args.cdb_count,
-               k0=args.k0, k1=args.k1, k2=args.k2
-            ))
 
-def hw_count(args):
-    return sum((args.cdb_count, args.k0, args.k1, args.k2))
+    def calculate_max_ipc(self):
+        self.params.set_max()
+        return self.calculate_ipc() 
+
+    def calculate_ipc(self):
+        stats_file = self.run()
+        ipc = 0 
+        for line in stats_file:
+            if line.startswith("IPC (avg)"):
+                ipc = float(line.split(":")[-1])
+        return ipc
+
+    def run(self):
+        """ returns a file containing the commands output to stdout """
+        cmd = self.format_cmd()
+        out = tempfile.TemporaryFile()
+        subprocess.call(cmd, stdout=out, shell=True)
+        out.seek(0)
+        return out
+
+    def format_cmd(self):
+        return ("{prog} {params} {tracefile}".format(
+            prog=prog, params=self.params.format_cmd(),
+            tracefile=self.tracefile))
+
+    def __str__(self):
+        return "trace: {tracefile} {params}".format(tracefile=self.tracefile,
+                                                     params=self.params)
 
 if __name__ == '__main__':
-    args = parse_args()
-    cmd = format_cmd(args)
-    stats = run_cmd(cmd)
-    ipc = find_ipc_from_stats_output(stats)
-
-    print
-    print print_args(args)
-    print "hw:", hw_count(args)
-    print "ipc:", ipc
+    tracefiles = sys.argv[1:]
+    for tfile in tracefiles:
+        print
+        print "Optimizing", tfile
+        r = Run(tracefile = tfile)
+        r.optimize()
