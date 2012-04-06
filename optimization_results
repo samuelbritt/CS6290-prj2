@@ -1,0 +1,155 @@
+
+Optimizing traces/barnes.txt
+Finding Maximum IPC...
+Optimizing FUs...
+ipc: 1.36893 fetch-rate: 8, cdbs: 3, k0: 1, k1: 1, k2: 1
+ipc: 1.36893 fetch-rate: 8, cdbs: 4, k0: 1, k1: 1, k2: 2
+ipc: 1.36893 fetch-rate: 8, cdbs: 4, k0: 1, k1: 2, k2: 1
+ipc: 1.36893 fetch-rate: 8, cdbs: 5, k0: 1, k1: 2, k2: 2
+ipc: 2.73598 fetch-rate: 8, cdbs: 4, k0: 2, k1: 1, k2: 1
+ipc: 2.73598 fetch-rate: 8, cdbs: 5, k0: 2, k1: 1, k2: 2
+ipc: 2.73598 fetch-rate: 8, cdbs: 5, k0: 2, k1: 2, k2: 1
+ipc: 2.73598 fetch-rate: 8, cdbs: 6, k0: 2, k1: 2, k2: 2
+Optimal FUs:
+ipc: 2.73598 fetch-rate: 8, cdbs: 4, k0: 2, k1: 1, k2: 1
+Optimizing CDBs...
+ipc: 0.9996 fetch-rate: 8, cdbs: 1, k0: 2, k1: 1, k2: 1
+ipc: 1.998 fetch-rate: 8, cdbs: 2, k0: 2, k1: 1, k2: 1
+ipc: 2.73598 fetch-rate: 8, cdbs: 3, k0: 2, k1: 1, k2: 1
+Final Results:
+ipc 2.73598 fetch-rate: 8, cdbs: 3, k0: 2, k1: 1, k2: 1
+
+Optimizing traces/gcc.txt
+Finding Maximum IPC...
+Optimizing FUs...
+ipc: 1.41723 fetch-rate: 8, cdbs: 3, k0: 1, k1: 1, k2: 1
+ipc: 1.41723 fetch-rate: 8, cdbs: 4, k0: 1, k1: 1, k2: 2
+ipc: 1.41723 fetch-rate: 8, cdbs: 4, k0: 1, k1: 2, k2: 1
+ipc: 1.41723 fetch-rate: 8, cdbs: 5, k0: 1, k1: 2, k2: 2
+ipc: 2.82885 fetch-rate: 8, cdbs: 4, k0: 2, k1: 1, k2: 1
+ipc: 2.82885 fetch-rate: 8, cdbs: 5, k0: 2, k1: 1, k2: 2
+ipc: 2.82885 fetch-rate: 8, cdbs: 5, k0: 2, k1: 2, k2: 1
+ipc: 2.82885 fetch-rate: 8, cdbs: 6, k0: 2, k1: 2, k2: 2
+Optimal FUs:
+ipc: 2.82885 fetch-rate: 8, cdbs: 4, k0: 2, k1: 1, k2: 1
+Optimizing CDBs...
+ipc: 0.9993 fetch-rate: 8, cdbs: 1, k0: 2, k1: 1, k2: 1
+ipc: 1.99681 fetch-rate: 8, cdbs: 2, k0: 2, k1: 1, k2: 1
+ipc: 2.80741 fetch-rate: 8, cdbs: 3, k0: 2, k1: 1, k2: 1
+Final Results:
+ipc 2.80741 fetch-rate: 8, cdbs: 3, k0: 2, k1: 1, k2: 1
+
+Optimizing traces/ocean.txt
+Finding Maximum IPC...
+Optimizing FUs...
+ipc: 1.11346 fetch-rate: 8, cdbs: 3, k0: 1, k1: 1, k2: 1
+ipc: 1.11346 fetch-rate: 8, cdbs: 4, k0: 1, k1: 1, k2: 2
+ipc: 1.11346 fetch-rate: 8, cdbs: 4, k0: 1, k1: 2, k2: 1
+ipc: 1.11346 fetch-rate: 8, cdbs: 5, k0: 1, k1: 2, k2: 2
+ipc: 2.22568 fetch-rate: 8, cdbs: 4, k0: 2, k1: 1, k2: 1
+ipc: 2.22568 fetch-rate: 8, cdbs: 5, k0: 2, k1: 1, k2: 2
+ipc: 2.22568 fetch-rate: 8, cdbs: 5, k0: 2, k1: 2, k2: 1
+ipc: 2.22568 fetch-rate: 8, cdbs: 6, k0: 2, k1: 2, k2: 2
+Optimal FUs:
+ipc: 2.22568 fetch-rate: 8, cdbs: 4, k0: 2, k1: 1, k2: 1
+Optimizing CDBs...
+ipc: 0.9996 fetch-rate: 8, cdbs: 1, k0: 2, k1: 1, k2: 1
+ipc: 1.9984 fetch-rate: 8, cdbs: 2, k0: 2, k1: 1, k2: 1
+ipc: 2.22519 fetch-rate: 8, cdbs: 3, k0: 2, k1: 1, k2: 1
+Final Results:
+ipc 2.22519 fetch-rate: 8, cdbs: 3, k0: 2, k1: 1, k2: 1
+
+Optimizing traces/perl.txt
+Finding Maximum IPC...
+Optimizing FUs...
+ipc: 1.51676 fetch-rate: 8, cdbs: 3, k0: 1, k1: 1, k2: 1
+ipc: 1.51745 fetch-rate: 8, cdbs: 4, k0: 1, k1: 1, k2: 2
+ipc: 1.51676 fetch-rate: 8, cdbs: 4, k0: 1, k1: 2, k2: 1
+ipc: 1.51745 fetch-rate: 8, cdbs: 5, k0: 1, k1: 2, k2: 2
+ipc: 3.01841 fetch-rate: 8, cdbs: 4, k0: 2, k1: 1, k2: 1
+ipc: 3.02755 fetch-rate: 8, cdbs: 5, k0: 2, k1: 1, k2: 2
+ipc: 3.01841 fetch-rate: 8, cdbs: 5, k0: 2, k1: 2, k2: 1
+ipc: 3.02755 fetch-rate: 8, cdbs: 6, k0: 2, k1: 2, k2: 2
+Optimal FUs:
+ipc: 3.01841 fetch-rate: 8, cdbs: 4, k0: 2, k1: 1, k2: 1
+Optimizing CDBs...
+ipc: 0.9996 fetch-rate: 8, cdbs: 1, k0: 2, k1: 1, k2: 1
+ipc: 1.99681 fetch-rate: 8, cdbs: 2, k0: 2, k1: 1, k2: 1
+ipc: 2.97089 fetch-rate: 8, cdbs: 3, k0: 2, k1: 1, k2: 1
+Final Results:
+ipc 2.97089 fetch-rate: 8, cdbs: 3, k0: 2, k1: 1, k2: 1
+
+Optimizing traces/test1.txt
+Finding Maximum IPC...
+Optimizing FUs...
+ipc: 0.333333 fetch-rate: 8, cdbs: 3, k0: 1, k1: 1, k2: 1
+ipc: 0.333333 fetch-rate: 8, cdbs: 4, k0: 1, k1: 1, k2: 2
+ipc: 0.333333 fetch-rate: 8, cdbs: 4, k0: 1, k1: 2, k2: 1
+ipc: 0.333333 fetch-rate: 8, cdbs: 5, k0: 1, k1: 2, k2: 2
+ipc: 0.333333 fetch-rate: 8, cdbs: 4, k0: 2, k1: 1, k2: 1
+ipc: 0.333333 fetch-rate: 8, cdbs: 5, k0: 2, k1: 1, k2: 2
+ipc: 0.333333 fetch-rate: 8, cdbs: 5, k0: 2, k1: 2, k2: 1
+ipc: 0.333333 fetch-rate: 8, cdbs: 6, k0: 2, k1: 2, k2: 2
+Optimal FUs:
+ipc: 0.333333 fetch-rate: 8, cdbs: 3, k0: 1, k1: 1, k2: 1
+Optimizing CDBs...
+ipc: 0.333333 fetch-rate: 8, cdbs: 1, k0: 1, k1: 1, k2: 1
+Final Results:
+ipc 0.333333 fetch-rate: 8, cdbs: 1, k0: 1, k1: 1, k2: 1
+
+Optimizing traces/test2.txt
+Finding Maximum IPC...
+Optimizing FUs...
+ipc: 0.5 fetch-rate: 8, cdbs: 3, k0: 1, k1: 1, k2: 1
+ipc: 0.5 fetch-rate: 8, cdbs: 4, k0: 1, k1: 1, k2: 2
+ipc: 0.5 fetch-rate: 8, cdbs: 4, k0: 1, k1: 2, k2: 1
+ipc: 0.5 fetch-rate: 8, cdbs: 5, k0: 1, k1: 2, k2: 2
+ipc: 0.666667 fetch-rate: 8, cdbs: 4, k0: 2, k1: 1, k2: 1
+ipc: 0.666667 fetch-rate: 8, cdbs: 5, k0: 2, k1: 1, k2: 2
+ipc: 0.666667 fetch-rate: 8, cdbs: 5, k0: 2, k1: 2, k2: 1
+ipc: 0.666667 fetch-rate: 8, cdbs: 6, k0: 2, k1: 2, k2: 2
+Optimal FUs:
+ipc: 0.666667 fetch-rate: 8, cdbs: 4, k0: 2, k1: 1, k2: 1
+Optimizing CDBs...
+ipc: 0.5 fetch-rate: 8, cdbs: 1, k0: 2, k1: 1, k2: 1
+ipc: 0.666667 fetch-rate: 8, cdbs: 2, k0: 2, k1: 1, k2: 1
+Final Results:
+ipc 0.666667 fetch-rate: 8, cdbs: 2, k0: 2, k1: 1, k2: 1
+
+Optimizing traces/test3.txt
+Finding Maximum IPC...
+Optimizing FUs...
+ipc: 0.4 fetch-rate: 8, cdbs: 3, k0: 1, k1: 1, k2: 1
+ipc: 0.5 fetch-rate: 8, cdbs: 4, k0: 1, k1: 1, k2: 2
+ipc: 0.4 fetch-rate: 8, cdbs: 4, k0: 1, k1: 2, k2: 1
+ipc: 0.5 fetch-rate: 8, cdbs: 5, k0: 1, k1: 2, k2: 2
+ipc: 0.4 fetch-rate: 8, cdbs: 4, k0: 2, k1: 1, k2: 1
+ipc: 0.5 fetch-rate: 8, cdbs: 5, k0: 2, k1: 1, k2: 2
+ipc: 0.4 fetch-rate: 8, cdbs: 5, k0: 2, k1: 2, k2: 1
+ipc: 0.5 fetch-rate: 8, cdbs: 6, k0: 2, k1: 2, k2: 2
+Optimal FUs:
+ipc: 0.5 fetch-rate: 8, cdbs: 4, k0: 1, k1: 1, k2: 2
+Optimizing CDBs...
+ipc: 0.4 fetch-rate: 8, cdbs: 1, k0: 1, k1: 1, k2: 2
+ipc: 0.5 fetch-rate: 8, cdbs: 2, k0: 1, k1: 1, k2: 2
+Final Results:
+ipc 0.5 fetch-rate: 8, cdbs: 2, k0: 1, k1: 1, k2: 2
+
+Optimizing traces/test4.txt
+Finding Maximum IPC...
+Optimizing FUs...
+ipc: 0.75 fetch-rate: 8, cdbs: 3, k0: 1, k1: 1, k2: 1
+ipc: 0.75 fetch-rate: 8, cdbs: 4, k0: 1, k1: 1, k2: 2
+ipc: 0.75 fetch-rate: 8, cdbs: 4, k0: 1, k1: 2, k2: 1
+ipc: 0.75 fetch-rate: 8, cdbs: 5, k0: 1, k1: 2, k2: 2
+ipc: 0.75 fetch-rate: 8, cdbs: 4, k0: 2, k1: 1, k2: 1
+ipc: 0.75 fetch-rate: 8, cdbs: 5, k0: 2, k1: 1, k2: 2
+ipc: 0.75 fetch-rate: 8, cdbs: 5, k0: 2, k1: 2, k2: 1
+ipc: 0.8 fetch-rate: 8, cdbs: 6, k0: 2, k1: 2, k2: 2
+Optimal FUs:
+ipc: 0.75 fetch-rate: 8, cdbs: 3, k0: 1, k1: 1, k2: 1
+Optimizing CDBs...
+ipc: 0.6 fetch-rate: 8, cdbs: 1, k0: 1, k1: 1, k2: 1
+ipc: 0.75 fetch-rate: 8, cdbs: 2, k0: 1, k1: 1, k2: 1
+Final Results:
+ipc 0.75 fetch-rate: 8, cdbs: 2, k0: 1, k1: 1, k2: 1
