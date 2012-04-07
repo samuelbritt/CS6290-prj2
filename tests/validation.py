@@ -1,37 +1,38 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-#
-# Validation Script
-#
-# Runs one or more simulations and can compare with the validation files
-# provided by the TA.
-#
-# When run with no arguments, runs all the validation traces and outputs to
-# stdout:
-#
-#       ./validation.py
-#
-# When run with a single validation file input, will only run that simulation:
-#
-#       ./validation.py gcc1.txt
-#
-# Options:
-#   -h, --help
-#           Print a help message and exit.
-#
-#   -d, --diff
-#           Instead of printing the simulation output to stdout, run a diff from
-#           sample output provided by the TA to the simulation output, and print
-#           to stdout.
-#
-#   -q, --quiet
-#           Turn off all verbosity from the simulations (only print statistics
-#           results). If this option is not provided, verbose mode is turned on
-#           in the simulation only if it is turned on for the sample output
-#           provided by the TA. Note that, if both --quiet and --diff are
-#           specified, a large diff could be produced (because the sample files
-#           are verbose but the simulation output is not).
+"""
+  Validation Script
+
+  Runs one or more simulations and can compare with the validation files
+  provided by the TA.
+
+  When run with no arguments, runs all the validation traces and outputs to
+  stdout:
+
+        ./validation.py
+
+  When run with a single validation file input, will only run that simulation:
+
+        ./validation.py gcc1.txt
+
+  Options:
+    -h, --help
+            Print a help message and exit.
+
+    -d, --diff
+            Instead of printing the simulation output to stdout, run a diff from
+            sample output provided by the TA to the simulation output, and print
+            to stdout.
+
+    -q, --quiet
+            Turn off all verbosity from the simulations (only print statistics
+            results). If this option is not provided, verbose mode is turned on
+            in the simulation only if it is turned on for the sample output
+            provided by the TA. Note that, if both --quiet and --diff are
+            specified, a large diff could be produced (because the sample files
+            are verbose but the simulation output is not).
+"""
 
 import os
 import sys
