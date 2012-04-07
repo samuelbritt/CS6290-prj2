@@ -4,11 +4,45 @@ Tomasulo Algorithm
 ------------------------------------
 ### Sam Britt
 
+####The Tour
+  All source files for the Tomasulo simulation program are in the
+  `src/` directory. Details on how to build and run the program are
+  the sections that follow.
+
+  The `trace/` directory contains all the trace files provided
+  by the TA, used for both validation and optimization.
+
+  The `tests/` directory contains some unit tests, as well as the
+  scripts and sample output for the validation runs. See the file
+  `tests/validation.py` to see how to run the validation script.
+  Output from my validation is in the project root, however. The file
+  `validation_run` contains the statistics output for all the
+  validation simulations; it was obtained by running
+
+      ./tests/validation.py --quiet > validation_run
+
+  from the project root. The file `validation_run.patch` is a series
+  of diffs between my validation output and the output provided by the
+  TA, showing that they only differ due to rounding error in the
+  floating point values. It was obtained by running
+
+      ./tests/validation.py --diff > validation_run.patch
+
+  from the project root.
+
+  The optimization script and results are in the project root, along
+  with a simple script to count the percentage of instructions using
+  each type of functional unit for a trace file.
+
+  The `report/` directory contains the sources for the report. The
+  project root contains a symlink to the compiled PDF.
+
 ####To build:
 
  - Run `make` to build optimized executables in the project root.
  - Run `make debug` to build non-optimized executables with debugging
    symbols in the project root.
+ - Run `make test` to run the unit tests and validation script.
  - Run `make clean` to remove all compiled files and generated
    dependency files.
 
